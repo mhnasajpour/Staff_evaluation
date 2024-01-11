@@ -1,0 +1,42 @@
+.main-background {
+    background-color: #D5F0C1;
+}
+
+.context-background {
+    background-color: #F9F7C9;
+}
+
+.logo-login-box {
+    width: max-content;
+    padding: 4% 0% 4% 10%;
+}
+
+@media screen and (max-width: 1212px) { 
+    .logo-login-box {
+        display: none; 
+        padding: 0%;
+    }
+}
+
+.login-box {
+    text-align: center;
+    border-radius: 10px;
+    padding: 4% 0;
+    align-self: center;
+    margin: 0 10%;
+}
+
+.validation {
+    background-color: brown;
+    color: aliceblue;
+    position: fixed; 
+    bottom: -3vh; 
+    width: 100%; 
+    border-radius: 0px;
+}
+
+.user-selection-box {
+    width: 20vw;
+    text-align: center;
+    border-radius: 10px;
+}
