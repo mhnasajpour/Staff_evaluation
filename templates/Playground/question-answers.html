@@ -1,0 +1,33 @@
+{% extends "Playground/headerBlock.html" %}
+
+{% block body %}
+<div id="position-selector">
+    <div class="container my-4 secondary-background">
+        {% if categories %}
+        <select id="select-category" class="form-control user-selection-box">
+            {% if current_category == None %}
+            <option value="">انتخاب کنید</option>
+            {% endif %}
+            {% for category in categories %}
+            {% if category == current_category %}
+            <option selected>{{ category }}</option>
+            {% else %}
+            <option>{{ category }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container my-4 context-background">
+    <div class="row">
+        <div class="col mb-5">1</div>
+        <div class="col mb-5">2</div>
+    </div>
+    <div class="row">
+        <div class="col mb-5">3</div>
+        <div class="col mb-5">4</div>
+    </div>
+</div>
+{% endblock %}

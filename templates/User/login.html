@@ -12,31 +12,31 @@
     <title>ورود</title>
 </head>
 
-<body class="main-background">
+<body class="primary-background">
     <div class="row p-0 m-0">
-        <div class="col my-5 login-box context-background">
+        <div class="col my-5 login-box secondary-background">
             <img src="{% static 'iut.png' %}" width="25%" class="mb-2">
             <div class="mb-5">سامانه ارزشیابی کارکنان و کارمندان<br>دانشگاه صنعتی اصفهان</div>
             <form method="POST">
                 {% csrf_token %}
-                <div class="my-3 px-5 mx-3 row">
-                    <div class="col px-4 col-md-auto">
+                <div class="my-3 px-5 mx-3 d-flex">
+                    <div style="width: 7rem;">
                         <label>نام کاربری</label>
                     </div>
-                    <div class="col p-0">
+                    <div class="p-0 w-100">
                         {{ form.username }}
                     </div>
                 </div>
-                <div class="my-3 px-5 mx-3 row">
-                    <div class="col px-4 col-md-auto">
+                <div class="my-3 px-5 mx-3 d-flex">
+                    <div style="width: 7rem;">
                         <label>کلمه عبور</label>
                     </div>
-                    <div class="col p-0">
+                    <div class="p-0 w-100">
                         {{ form.password }}
                     </div>
                 </div>
-                <div class="my-3 px-5 mx-3 row">
-                    <button type="submit" class="btn btn-success">ورود</button>
+                <div class="my-3 px-5 mx-3">
+                    <button type="submit" class="btn btn-success w-100">ورود</button>
                 </div>
             </form>
         </div>

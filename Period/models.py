@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import date
-from User.models import Group
+from User.models import Category
 from django.core.exceptions import ValidationError
 
 
@@ -8,14 +8,10 @@ class Period(models.Model):
     name = models.CharField(max_length=100, unique=True)
     start_date = models.DateField(default=date.today)
     end_date = models.DateField()
-    groups = models.ManyToManyField(Group)
+    categories = models.ManyToManyField(Category)
 
     def __str__(self):
         return self.name
-
-    def groups_str(self):
-        return ', '.join(
-            [group for group in self.groups.all().values_list('name', flat=True)])
 
     def clean(self):
         if self.start_date > self.end_date:

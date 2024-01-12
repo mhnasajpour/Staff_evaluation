@@ -1,9 +1,13 @@
-.main-background {
+.primary-background {
     background-color: #D5F0C1;
 }
 
-.context-background {
+.secondary-background {
     background-color: #F9F7C9;
+}
+
+.context-background {
+    background-color:whitesmoke;
 }
 
 .logo-login-box {

@@ -17,11 +17,13 @@ class user_login(View):
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                return redirect('../../')
+                if self.request.user.is_superuser:
+                    return redirect('playground:management')
+                return redirect('playground:home')
         return render(request, 'User/login.html', {'form': form, 'error': True})
 
 
 class user_logout(View):
     def get(self, request):
         logout(request)
-        return redirect('../login')
+        return redirect('user:login')

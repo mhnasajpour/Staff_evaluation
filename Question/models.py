@@ -1,6 +1,6 @@
 from django.db import models
 from Period.models import Period
-from User.models import Group
+from User.models import Category
 from django.core.exceptions import ValidationError
 
 
@@ -18,13 +18,13 @@ class Question(models.Model):
     period = models.ForeignKey(Period, on_delete=models.CASCADE)
     weight = models.FloatField(default=1)
     type = models.CharField(choices=TYPE_CHOICES, max_length=1, null=True)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
     def clean(self):
-        if self.type != '4' and self.group:
+        if self.type != '4' and self.category:
             raise ValidationError(
                 f'تایپ سوال "{TYPE_CHOICES[int(self.type)][1]}"، نیازی به گروه شغلی ندارد')
-        if self.type == '4' and self.group not in self.period.groups.all():
+        if self.type == '4' and self.category not in self.period.categories.all():
             raise ValidationError(
-                f'دوره زمانی "{self.period}"، شامل گروه "{self.group}" نمی‌باشد')
+                f'دوره زمانی "{self.period}"، شامل گروه "{self.category}" نمی‌باشد')
         return super().clean()

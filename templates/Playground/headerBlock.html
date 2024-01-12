@@ -12,33 +12,29 @@
     <title>سامانه ارزشیابی</title>
 </head>
 
-<body class="main-background">
-    <nav class="navbar navbar-expand-lg navbar-light context-background px-5">
+<body class="primary-background">
+    <nav class="navbar navbar-expand-lg navbar-light secondary-background px-5">
         <div class="navbar-brand">سامانه ارزشیابی کارکنان</div>
         <hr width="2" size="45" class="mx-5 my-0" />
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav mt-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link mx-2" href="#">خانه</a>
+                    <a class="nav-link mx-2" href="{% url 'playground:home' %}">خانه</a>
                 </li>
                 <li class="nav-item mx-2">
                     <a class="nav-link" href="{% url 'user:logout' %}">خروج</a>
                 </li>
             </ul>
         </div>
-        <div dir="ltr" id="position-selector">
-            {% if groups %}
-            <select class="form-control user-selection-box">
-                {% for group in groups %}
-                <option id="{{ group.0 }}">{{ group.1 }}</option>
-                {% endfor %}
-            </select>
-            {% endif %}
-
-        </div>
     </nav>
+
+    {% block body %}
+    {% endblock body %}
+
 </body>
 
+
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'main.js' %}"></script>
 
 </html>
