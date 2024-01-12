@@ -17,7 +17,7 @@ class Period(models.Model):
         if self.start_date > self.end_date:
             raise ValidationError(
                 "تاریخ شروع دوره زمانی، نمی‌تواند از دوره پایانی آن بزرگتر باشد.")
-        for start, end in Period.objects.values_list("start_date", "end_date"):
+        for start, end in Period.objects.exclude(pk=self.pk).values_list("start_date", "end_date"):
             if start <= self.start_date <= end or start <= self.end_date <= end or self.start_date <= start <= self.end_date:
                 raise ValidationError(
                     "دو دوره زمانی نمی‌توانند از لحاظ زمانی همپوشانی داشته باشند.")

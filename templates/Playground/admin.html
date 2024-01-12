@@ -5,12 +5,24 @@
     <form method="POST" enctype='multipart/form-data'>
         {% csrf_token %}
         <div class="d-flex">
-            <label class="px-3 py-1">کاربران</label>
-            {{ form.user_file }}
+            <label class="px-3 py-3">کاربران</label>
+            <div>
+                {{ form.user_file }}
+                <small class="px-3 py-1 bg-danger text-white">توجه کنید با انجام این مرحله، کلیه کاربران، گرو‌ه‌های شغلی و ارتباط میان آن‌ها پاک شده و داده‌های جدید جای آن‌ها را خواهند گرفت.</small>
+            </div>
         </div>
         <div class="d-flex">
             <button type="submit" class="btn btn-success w-100 mt-5">ادامه</button>
         </div>
     </form>
 </div>
+{% if status == True %}
+<div class="alert validation" style="background-color: seagreen;" role="alert">
+    داده‌ها با موفقیت بارگزاری شدند.
+</div>
+{% elif status == False %}
+<div class="alert validation" style="background-color: maroon;" role="alert">
+    بدلیل خطا، بارگزاری فایل متوقف شد. لطفا مجددا تلاش کنید.
+</div>
+{% endif %}
 {% endblock %}
