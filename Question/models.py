@@ -1,6 +1,6 @@
 from django.db import models
 from Period.models import Period
-from User.models import Category
+from User.models import Category, Position
 from django.core.exceptions import ValidationError
 
 
@@ -12,9 +12,22 @@ TYPE_CHOICES = (
     ('4', 'ارزشیابی تخصصی')
 )
 
+ANSWER_CHOICES = (
+    (0, 'ضعیف'),
+    (1, 'متوسط'),
+    (2, 'خوب'),
+    (3, 'بسیار خوب')
+)
+
+class Survey(models.Model):
+    period = models.ForeignKey(Period, on_delete=models.SET_NULL, null=True)
+    respondent_position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, related_name='respondent_set')
+    target_position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, related_name='target_set')
+    type = models.CharField(choices=TYPE_CHOICES, max_length=1, null=True)
+    is_done = models.BooleanField(default=False)
 
 class Question(models.Model):
-    context = models.CharField(max_length=300)
+    content = models.CharField(max_length=300)
     period = models.ForeignKey(Period, on_delete=models.CASCADE)
     weight = models.FloatField(default=1)
     type = models.CharField(choices=TYPE_CHOICES, max_length=1, null=True)
@@ -28,3 +41,8 @@ class Question(models.Model):
             raise ValidationError(
                 f'دوره زمانی "{self.period}"، شامل گروه "{self.category}" نمی‌باشد')
         return super().clean()
+
+class QuestionAnswer(models.Model):
+    survey = models.ForeignKey(Survey, on_delete=models.SET_NULL, null=True)
+    question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True)
+    answer = models.IntegerField(choices=ANSWER_CHOICES, null=True)

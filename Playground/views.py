@@ -48,7 +48,7 @@ class Management(View):
         try:
             clean_and_create_data(request.FILES['user_file'])
         except:
-            return render(request, 'Playground/admin.html', {'form': form, 'status': False})
-        return render(request, 'Playground/admin.html', {'form': form, 'status': True})
+            return render(request, 'Playground/admin.html', {'form': form, 'status': False, 'message': 'بدلیل خطا، بارگزاری فایل متوقف شد. لطفا مجددا تلاش کنید.'})
+        return render(request, 'Playground/admin.html', {'form': form, 'status': True, 'message': 'داده‌ها با موفقیت بارگزاری شدند.'})
         
             

@@ -24,4 +24,5 @@ class Period(models.Model):
         return super().clean()
 
     def get_current_period():
-        return Period.objects.get(start_date__lte=date.today(), end_date__gte=date.today())
+        current_periods =  Period.objects.filter(start_date__lte=date.today(), end_date__gte=date.today())
+        return current_periods[0] if current_periods else None

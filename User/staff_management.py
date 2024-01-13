@@ -71,11 +71,10 @@ def add_positions(positions):
 
 
 def clean_and_create_data(file):
+    data = pd.read_excel(file)
     remove_all_categories()
     remove_all_positions()
     remove_all_users()
-
-    data = pd.read_excel(file)
     add_categories(data[header['category']].unique())
     add_users(data)
     add_positions(data)

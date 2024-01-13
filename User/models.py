@@ -24,9 +24,15 @@ class Position(models.Model):
     user = models.ForeignKey(
         User, null=True, on_delete=models.SET_NULL, related_name='users')
     manager = models.ForeignKey(
-        User, null=True, on_delete=models.SET_NULL, related_name='managers')
+        User, null=True, blank=True, on_delete=models.SET_NULL, related_name='managers')
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.unit + '-' + self.title
+    
+    def get_user(self):
+        return self.user.get_full_name()
+    
+    def get_manager(self):
+        return self.manager.get_full_name()

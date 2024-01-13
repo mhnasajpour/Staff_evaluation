@@ -44,3 +44,12 @@ class PositionAdmin(admin.ModelAdmin):
     search_fields = ('title', 'unit', 'user', 'manager')
     list_filter = ('category', 'unit')
     fields = ('title', 'unit', 'user', 'manager', 'category')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(PositionAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['title'].required = False
+        form.base_fields['unit'].required = False
+        form.base_fields['manager'].required = False
+        form.base_fields['category'].required = False
+        return form
+

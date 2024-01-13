@@ -44,3 +44,21 @@
     text-align: center;
     border-radius: 10px;
 }
+
+.link-box {
+    text-decoration: none;
+    border-radius: 7px;
+    background-color: #ffc107;
+    margin: auto 3.5rem;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    width: 75%;
+    height: 3rem;
+    display: inline-block;
+}
+
+.link-text {
+    color: #ab0010;
+    text-decoration: none;
+}
