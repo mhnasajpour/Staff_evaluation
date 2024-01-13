@@ -23,7 +23,7 @@ class Home(View):
 
 
 class Question_answers(View):
-    def get(self, request, category, questionType):
+    def get(self, request, category):
         if not self.request.user.is_authenticated:
             return redirect('auth/login')
         categories = get_user_categories(self.request.user.id)
@@ -33,7 +33,6 @@ class Question_answers(View):
             'categories': categories,
             'current_category': category,
             'position': user_position,
-            'questionType': questionType,
         }
         return render(request, 'Playground/question-answers.html', context=context)
 

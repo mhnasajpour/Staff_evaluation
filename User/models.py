@@ -29,10 +29,10 @@ class Position(models.Model):
         Category, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return self.unit + '-' + self.title
+        return self.user.get_full_name()
     
     def get_user(self):
         return self.user.get_full_name()
     
-    def get_manager(self):
+    def get_user(self):
         return self.manager.get_full_name()
