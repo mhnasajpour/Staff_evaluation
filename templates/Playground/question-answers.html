@@ -4,44 +4,14 @@
 {% if categories %}
 <div class="container my-4 secondary-background rounded">
     <div class="row p-3 ">
-    <div class="col">
-        <div class="py-1 px-3">
-            <span>رسته</span>
-            {% if categories|length > 1 %}
-            <span>(انتخاب کنید)</span>
-            {% endif %}
-        </div>
-        <select id="select-category" class="form-control user-box">
-            {% if current_category == None %}
-            <option>انتخاب کنید</option>
-            {% endif %}
-            {% for category in categories %}
-            {% if category == current_category %}
-            <option selected>{{ category }}</option>
-            {% else %}
-            <option>{{ category }}</option>
-            {% endif %}
-            {% endfor %}
-        </select>
-    </div>
-    {% if position != None %}
-    <div class="col">
-        <div class="py-1 px-3">واحد سازمان</div>
-        <div class="user-box border p-2">{% if position.unit %}{{ position.unit }}{% else %}---{% endif %}</div>
-    </div>
-    <div class="col">
-        <div class="py-1 px-3">مسئولیت</div>
-        <div class="user-box border p-2">{% if position.title %}{{ position.title }}{% else %}---{% endif %}</div>
-    </div>
-    <div class="col">
-        <div class="py-1 px-3">مدیر مستقیم</div>
-        <div class="user-box border p-2">{% if position.manager %}{{ position.manager }}{% else %}---{% endif %}</div>
-    </div>
-    {% endif %}
-    <div class="row p-3 ">
         <div class="col">
-            <div class="py-1 px-3">نوع پرسشنامه</div>
-            <select id="select-questionType" class="form-control user-box">
+            <div class="py-1 px-3">
+                <span>رسته</span>
+                {% if categories|length > 1 %}
+                <span>(انتخاب کنید)</span>
+                {% endif %}
+            </div>
+            <select id="select-category" class="form-control user-box">
                 {% if current_category == None %}
                 <option>انتخاب کنید</option>
                 {% endif %}
@@ -54,8 +24,31 @@
                 {% endfor %}
             </select>
         </div>
+        {% if position != None %}
+        <div class="col">
+            <div class="py-1 px-3">واحد سازمان</div>
+            <div class="user-box border p-2">{% if position.unit %}{{ position.unit }}{% else %}---{% endif %}</div>
         </div>
+        <div class="col">
+            <div class="py-1 px-3">مسئولیت</div>
+            <div class="user-box border p-2">{% if position.title %}{{ position.title }}{% else %}---{% endif %}</div>
+        </div>
+        <div class="col">
+            <div class="py-1 px-3">مدیر مستقیم</div>
+            <div class="user-box border p-2">{% if position.manager %}{{ position.manager }}{% else %}---{% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
+<div class="container my-4 secondary-background rounded">
+    <div class="row p-3 ">
+        <div class="col">
+            <div class="py-1 px-3">مدیر مستقیم</div>
+            <div class="user-box border p-2">{% if position.manager %}{{ position.manager }}{% else %}---{% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endif %}
 
