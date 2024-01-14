@@ -62,3 +62,8 @@
     color: #ab0010;
     text-decoration: none;
 }
+
+.questions-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+}

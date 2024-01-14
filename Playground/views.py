@@ -4,7 +4,8 @@ from .forms import ManagementForm
 from User.staff_management import clean_and_create_data
 from User.models import Position
 from Period.models import Period
-from Question.models import Survey, Question
+from Question.models import TYPE_CHOICES, ANSWER_CHOICES, Survey, Question
+from django.shortcuts import get_object_or_404
 
 
 def get_user_categories(user_id):
@@ -13,18 +14,24 @@ def get_user_categories(user_id):
     return set(user_categories).intersection(period_categories)
 
 
-def get_questions(user_surveys, period):
+def get_questions(period, position):
+    user_surveys = Survey.objects.filter(period=period, respondent_position=position, is_done=False)
     type_of_surveys = user_surveys.values_list('type', flat=True)
-    period_questions = Question.objects.filter(period=period)
+    period_of_questions = Question.objects.filter(period=period)
+    selected_surveys, questions = user_surveys.none(), period_of_questions.none() 
     if '2' in type_of_surveys:
-        return period_questions.filter(type='2')
+        selected_surveys = user_surveys.filter(type='2')
+        questions = period_of_questions.filter(type='2')
     elif '3' in type_of_surveys:
-        return period_questions.filter(type='3') | period_questions.filter(category=user_surveys[0].respondent_position.category)
+        selected_surveys = user_surveys.filter(type='3')
+        questions = period_of_questions.filter(type='3') | period_of_questions.filter(category=user_surveys[0].respondent_position.category)
     elif '0' in type_of_surveys:
-        return period_questions.filter(type='0')
+        selected_surveys = user_surveys.filter(type='0')
+        questions = period_of_questions.filter(type='0')
     elif '1' in type_of_surveys:
-        return period_questions.filter(type='1')
-    return []
+        selected_surveys = user_surveys.filter(type='1')
+        questions = period_of_questions.filter(type='1')
+    return selected_surveys, questions
 
 
 class Home(View):
@@ -46,16 +53,20 @@ class Question_answers(View):
         categories = get_user_categories(self.request.user.id)
         category = category if category in categories else None
         user_position = Position.objects.get(user_id=self.request.user.id, category__name=category) if category else None
-        user_surveys = Survey.objects.filter(period=current_period, respondent_position=user_position, is_done=False)
-        questions = get_questions(user_surveys, user_position)
-        type_of_questions = questions.first().type
+        user_surveys, questions = get_questions(current_period, user_position)
+        selected_survey = user_surveys[0] if user_surveys else None
+        if request.GET.get('target'):
+            selected_survey = get_object_or_404(user_surveys, id=request.GET.get('target'))
+        type_of_questions = TYPE_CHOICES[int(questions.first().type)][1] if questions else None
         context = {
             'categories': categories,
             'current_category': category,
             'position': user_position,
             'type_of_questions': type_of_questions,
-            'serveys': user_surveys,
+            'surveys': user_surveys,
+            'first_survey': selected_survey,
             'questions': questions,
+            'choices': ANSWER_CHOICES[::-1],
         }
         return render(request, 'Playground/question-answers.html', context=context)
 
