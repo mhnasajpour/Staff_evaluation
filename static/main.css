@@ -36,7 +36,7 @@
     bottom: -3vh; 
     width: 100%; 
     border-radius: 0px;
-    padding: 1.5rem 5rem;
+    padding: 1rem 5rem;
 }
 
 .user-box {
@@ -65,5 +65,5 @@
 
 .questions-grid {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 50% 50%;
 }

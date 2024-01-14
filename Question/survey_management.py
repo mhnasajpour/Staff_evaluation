@@ -8,17 +8,26 @@ def remove_all_surveys(period):
 
 def clean_and_create_surveys(period):
     remove_all_surveys(period)
-    create_self_and_manager_assessment_surveys(period)
+    create_self_assessment_surveys(period)
+    create_manager_assessment_surveys(period)
     create_colleague_assessment_surveys(period)
     create_same_category_assessment_surveys(period)
 
 
-def create_self_and_manager_assessment_surveys(period):
+def create_self_assessment_surveys(period):
     allowed_categories = period.categories.values_list('name', flat=True)
     positions = Position.objects.filter(category__is_root=False, category__name__in=allowed_categories)
     for position in positions:
         Survey.objects.create(period=period, target_position=position, respondent_position=position, type='0')
-        Survey.objects.create(period=period, target_position=position, respondent_position=position, type='1')
+
+
+def create_manager_assessment_surveys(period):
+    allowed_categories = period.categories.values_list('name', flat=True)
+    positions = Position.objects.filter(category__name__in=allowed_categories)
+    for position in positions:
+        manager_positions = Position.objects.filter(user=position.manager)
+        if manager_positions:
+            Survey.objects.create(period=period, target_position=position, respondent_position=manager_positions[0], type='1')
 
 
 def create_colleague_assessment_surveys(period):

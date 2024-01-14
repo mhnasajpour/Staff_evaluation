@@ -9,7 +9,7 @@
                 <span>رسته</span>
                 <span class="text-danger small fw-bold">(انتخاب کنید)</span>
             </div>
-            <select id="select-category" class="form-control user-box">
+            <select id="select-category" onchange="selectCategory()" class="form-control user-box">
                 {% if current_category == None %}
                 <option>انتخاب کنید</option>
                 {% endif %}
@@ -54,7 +54,7 @@
                 <span class="text-danger small fw-bold">(انتخاب کنید)</span>
                 {% endif %}
             </div>
-            <select id="select-user" class="form-control user-box">
+            <select id="select-user" onchange="selectUser()" class="form-control user-box">
                 {% for survey in surveys %}
                 {% if survey == first_survey %}
                 <option selected value="{{ survey.id }}">{{ survey.target_position }}</option>
@@ -77,29 +77,59 @@
 <div class="container my-4 secondary-background rounded">
     <div class="questions-grid">
         {% for question in questions %}
-        <div class="m-4 context-background rounded p-3">
+        <div class="m-4 context-background p-3 border" style="border-radius: 10px;">
             <span>{{ question.content }}</span>
             <span class="small fw-bold">({{ question.weight }} امتیاز)</span>
             <br>
             {% for choice in choices %}
             <div class="form-check form-check-inline mt-4 mx-2">
                 <input class="form-check-input" type="radio" name="{{ question.id }}"
-                    id="{{ question.id }}-{{ choice.0 }}" value="{{ choice.0 }}" point="{{ question.weight }}" onchange="calcTotalPoints()">
-                <label class="form-check-label" for="{{ question.id }}-{{ choice.0 }}">{{ choice.1 }}</label>
+                    id="{{ question.id }}-{{ choice.1 }}" value="{{ choice.1 }}" base="{{ choice.0 }}" point="{{ question.weight }}" onchange="calcTotalPoints()">
+                <label class="form-check-label" for="{{ question.id }}-{{ choice.1 }}">{{ choice.2 }}</label>
             </div>
             {% endfor %}
         </div>
         {% endfor %}
     </div>
-    <div class="pt-3 pb-4 mx-4 rounded d-flex" style="gap: 2vw;">
+    <div class="pt-3 pb-4 mx-4 d-flex" style="gap: 2vw;">
         <div class="user-box border p-2 w-25" id="total-points" max="{{ total_points }}">
             <span>امتیاز داده شده: </span>
             <span id="display-points" class="fw-bold">0</span>
         </div>
-        <button type="submit" class="btn btn-success w-100">ثبت ارزشیابی</button>
-        <button type="submit" class="btn btn-danger w-25">پرسشنامه بعدی</button>
+        <button type="submit" class="btn btn-success w-100" onclick="sendSurveyResults()">ثبت ارزشیابی</button>
+        {% if allow_to_skip_survey %}
+            <a class="btn btn-danger w-100" href="{% url 'playground:skip_surveys' current_category %}">رد کردن پرسشنامه‌{% if surveys|length > 1 %}های{% endif %} {{ type_of_questions }}</a>
+        {% endif %}
+    </div>
+    <div class="pb-4 mx-4 d-flex">
+        <div class="alert alert-warning text-white w-100 small fw-bold" id="alert" role="alert" hidden="True"></div>
     </div>
 </div>
-</div>
+<script>
+    function sendSurveyResults() {
+        const points = []
+        document.querySelectorAll('.questions-grid [type="radio"]').forEach((element) => {
+            if (element.checked) points.push(element.value)
+        })
+        fetch('{{ request.get_full_path }}', {
+            method: "POST",
+            body: JSON.stringify({
+                survey: document.getElementById('select-user').value,
+                points: points,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRFToken": '{{ csrf_token }}',
+            }
+        }).then((a) => { return a.json() }).then((result) => {
+            const alert = document.getElementById("alert")
+            alert.innerHTML = result['message']
+            alert.hidden = false
+            if (result['status']) setTimeout(() => { window.location.href = window.location.href.split("?")[0] }, 3000)
+            alert.style.backgroundColor = result['status'] ? "mediumseagreen" : 'orangered'
+            window.scrollTo(0, document.body.scrollHeight)
+        })
+    }
+</script>
 {% endif %}
 {% endblock %}

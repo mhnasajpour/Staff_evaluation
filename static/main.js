@@ -1,10 +1,10 @@
-document.getElementById("select-category").addEventListener("change", () => {
+function selectCategory(){
     window.location.href = document.getElementById("select-category").value
-})
+}
 
-document.getElementById("select-user").addEventListener("change", () => {
+function selectUser() {
     window.location.href = `?target=${document.getElementById("select-user").value}`
-})
+}
 
 function calcTotalPoints() {
     let total_points = 0
@@ -12,7 +12,7 @@ function calcTotalPoints() {
     const displayElement = document.getElementById('display-points')
 
     document.querySelectorAll('.questions-grid [type="radio"]').forEach((element) => {
-        if (element.checked) total_points += element.getAttribute("point") * element.value
+        if (element.checked) total_points += element.getAttribute("point") * element.getAttribute("base")
     })
     const result = Math.round(total_points / maxPoint * 100)
 
