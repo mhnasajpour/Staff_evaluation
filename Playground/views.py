@@ -6,6 +6,8 @@ from User.models import Position
 from Period.models import Period
 from Question.models import TYPE_CHOICES, ANSWER_CHOICES, Survey, Question
 from django.shortcuts import get_object_or_404
+from django.db.models import Sum
+
 
 
 def get_user_categories(user_id):
@@ -66,7 +68,8 @@ class Question_answers(View):
             'surveys': user_surveys,
             'first_survey': selected_survey,
             'questions': questions,
-            'choices': ANSWER_CHOICES[::-1],
+            'total_points': questions.aggregate(Sum('weight'))['weight__sum'],
+            'choices': list(map(lambda choice: (round(choice[0] / 3, 2), choice[1]), ANSWER_CHOICES))[::-1],
         }
         return render(request, 'Playground/question-answers.html', context=context)
 

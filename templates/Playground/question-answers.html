@@ -1,15 +1,13 @@
 {% extends "Playground/headerBlock.html" %}
 
 {% block body %}
-{% if categories %}
+{% if categories|length > 1 %}
 <div class="container my-4 secondary-background rounded">
     <div class="row p-3 ">
         <div class="col">
             <div class="py-1 px-3">
                 <span>رسته</span>
-                {% if categories|length > 1 %}
                 <span class="text-danger small fw-bold">(انتخاب کنید)</span>
-                {% endif %}
             </div>
             <select id="select-category" class="form-control user-box">
                 {% if current_category == None %}
@@ -41,11 +39,13 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
+{% if type_of_questions %}
 <div class="container my-4 secondary-background rounded">
     <div class="row p-3 ">
         <div class="col">
             <div class="py-1 px-3">نوع پرسشنامه</div>
-            <div class="user-box border p-2">{% if type_of_questions %}{{ type_of_questions }}{% else %}---{% endif %}</div>
+            <div class="user-box border p-2">{{ type_of_questions }}</div>
         </div>
         <div class="col">
             <div class="py-1 px-3">
@@ -84,17 +84,17 @@
             {% for choice in choices %}
             <div class="form-check form-check-inline mt-4 mx-2">
                 <input class="form-check-input" type="radio" name="{{ question.id }}"
-                    id="{{ choice.0 }}{{ question.id }}" value="{{ choice.0 }}">
-                <label class="form-check-label" for="{{ choice.0 }}{{ question.id }}">{{ choice.1 }}</label>
+                    id="{{ question.id }}-{{ choice.0 }}" value="{{ choice.0 }}" point="{{ question.weight }}" onchange="calcTotalPoints()">
+                <label class="form-check-label" for="{{ question.id }}-{{ choice.0 }}">{{ choice.1 }}</label>
             </div>
             {% endfor %}
         </div>
         {% endfor %}
     </div>
     <div class="pt-3 pb-4 mx-4 rounded d-flex" style="gap: 2vw;">
-        <div class="user-box border p-2 w-25" id="total-points">
+        <div class="user-box border p-2 w-25" id="total-points" max="{{ total_points }}">
             <span>امتیاز داده شده: </span>
-            <span>0</span>
+            <span id="display-points" class="fw-bold">0</span>
         </div>
         <button type="submit" class="btn btn-success w-100">ثبت ارزشیابی</button>
         <button type="submit" class="btn btn-danger w-25">پرسشنامه بعدی</button>
