@@ -8,12 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.rtl.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-grid.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-grid.rtl.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-utilities.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-utilities.rtl.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-reboot.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-reboot.rtl.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Vazirmatn-font-face.css' %}">
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <title>سامانه ارزشیابی</title>
 </head>
@@ -21,14 +16,17 @@
 <body class="primary-background">
     <nav class="navbar navbar-expand-lg navbar-light header-background px-5">
         <div class="navbar-brand" style="color: aliceblue;">سامانه ارزشیابی کارکنان</div>
-        <hr width="2" size="45" class="mx-5 my-0" />
+        <hr width="2" size="45" class="mx-5 my-0" style="color: aliceblue;" />
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav mt-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link mx-2" style="color: aliceblue;" href="{% url 'survey:home' %}">خانه</a>
+                    <a class="nav-link mx-2" href="{% url 'survey:home' %}" style="color: aliceblue;">خانه</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mx-2" href="{% url 'user:edit' %}" style="color: aliceblue;">ویرایش</a>
                 </li>
                 <li class="nav-item mx-2">
-                    <a class="nav-link" style="color: aliceblue;" href="{% url 'user:logout' %}">خروج</a>
+                    <a class="nav-link" onclick="openModal('logout')" style="color: aliceblue; cursor: pointer;">خروج</a>
                 </li>
             </ul>
         </div>
@@ -37,11 +35,21 @@
     {% block body %}
     {% endblock body %}
 
+    <div id="overlay" class="overlay hidden"></div>
+    <section class="modal hidden context-background" id="logout">
+        <div>
+            <h3 class="mb-3">هشدار</h3>
+            <p>آیا از حساب کاربری خود خارج می‌شوید؟</p>
+        </div>
+        <div class="d-flex mt-3 flex-gap">
+            <a type="button" class="btn w-100 btn-success" href="{% url 'user:logout' %}">ادامه</a>
+            <button type="button" class="btn w-100 btn-danger btn-close-modal" onclick="closeModal('logout')">انصراف</button>
+        </div>
+    </section>
 </body>
 
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
 <script src="{% static 'main.js' %}"></script>
 
 </html>

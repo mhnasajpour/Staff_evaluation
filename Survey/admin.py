@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Survey, Question
+from .models import Survey, Question, QuestionAnswer
 
 
 @admin.register(Survey)
@@ -21,3 +21,10 @@ class QuestionAdmin(admin.ModelAdmin):
         form = super(QuestionAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['category'].required = False
         return form
+
+@admin.register(QuestionAnswer)
+class QuestionAnswerAdmin(admin.ModelAdmin):
+    list_display = ('survey', 'question', 'answer')
+    search_fields = ('survey', 'question__content')
+    list_filter = ('survey__period', 'survey__type', 'answer')
+    fields = ('survey', 'question', 'answer')

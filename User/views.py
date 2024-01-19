@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
-from .forms import LoginForm
+from .forms import LoginForm, PasswordChangeForm
+from .models import User
 
 
 class user_login(View):
@@ -27,3 +28,19 @@ class user_logout(View):
     def get(self, request):
         logout(request)
         return redirect('user:login')
+
+
+class User_edit(View):
+    def get(self, request):
+        user = User.objects.get(id=self.request.user.id)
+        form = PasswordChangeForm(request.user, request.POST)
+        return render(request, 'User/edit.html', {'form': form, 'user': user})
+        
+    def post(self, request):
+        form = PasswordChangeForm(request.user, request.POST)
+        user = User.objects.get(id=self.request.user.id)
+        if form.is_valid():
+            form.save()
+            return redirect('user:login')
+        else:
+            return render(request, 'User/edit.html', {'form': form, 'user': user, 'status': False, 'message': form.errors})

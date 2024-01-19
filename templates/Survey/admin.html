@@ -3,46 +3,59 @@
 {% block body %}
 <div class="container my-5 p-5 secondary-background rounded">
     <div class="row mb-4">
-        <div class="col link-box"><a href="/admin/Period/period/" class="link-text">ورود به صفحه دوره ارزیابی</a></div>
-        <div class="col link-box"><a href="/admin/Survey/question/" class="link-text">ورود به صفحه سوالات</a></div>
+        <div class="col link-box"><a href="/admin/Period/period/" class="link-text">صفحه دوره ارزیابی</a></div>
+    </div>
+    <div class="row mb-4">
+        <div class="col link-box"><a href="/admin/User/category/" class="link-text">صفحه رسته‌</a></div>
+        <div class="col link-box"><a href="/admin/User/user/" class="link-text">صفحه کاربر</a></div>
+        <div class="col link-box"><a href="/admin/User/position/" class="link-text">صفحه موقعیت‌ شغلی</a></div>
     </div>
     <div class="row">
-        <div class="col link-box"><a href="/admin/User/category/" class="link-text">ورود به صفحه رسته‌ها</a></div>
-        <div class="col link-box"><a href="/admin/User/user/" class="link-text">ورود به صفحه کاربران</a></div>
-        <div class="col link-box"><a href="/admin/User/position/" class="link-text">ورود به صفحه موقعیت‌های شغلی</a>
-        </div>
+        <div class="col link-box"><a href="/admin/Survey/survey/" class="link-text">صفحه پرسشنامه‌</a></div>
+        <div class="col link-box"><a href="/admin/Survey/question/" class="link-text">صفحه سوال</a></div>
+        <div class="col link-box"><a href="/admin/Survey/questionanswer/" class="link-text">صفحه پرسش-پاسخ‌</a></div>
     </div>
 </div>
 <div class="container my-5 p-5 secondary-background rounded">
-    <div class="d-flex">
-        <label class="px-3 py-1 text-center w-25">با انتخاب این بخش، تمام پرسشنامه‌های دوره ارزشیابی کنونی حذف شده و مجددا پرسشنامه‌های همه افراد مشمول ساخته می‌شود.</label>
-        <div class="col link-box bg-danger"><a href="{% url 'survey:renew' %}" class="link-text text-white">بازتولید تمام پرسشنامه‌های دوره ارزشیابی کنونی</a></div>
-    </div>
-</div>
-<div class="container my-5 p-5 secondary-background rounded">
-    <form method="POST" enctype='multipart/form-data'>
+    <form method="POST" enctype='multipart/form-data' class="mb-5">
         {% csrf_token %}
-        <div class="d-flex">
-            <label class="px-3 py-1 text-center w-25">حذف و ساختن<br>کاربران و گروه‌های شغلی</label>
+        <div class="d-flex flex-gap">
             <div class="w-100">
                 {{ form.user_file }}
-                <div class="px-3 m-0 bg-danger text-white rounded">
-                    <small>
-                        توجه کنید با انجام این مرحله، کلیه کاربران، گرو‌ه‌های شغلی و ارتباط میان آن‌ها پاک شده و
-                        داده‌های جدید جای آن‌ها را می‌گیرند.
-                    </small>
-                </div>
             </div>
-            <button type="submit" class="btn btn-success w-25 h-25 mx-5">انتخاب</button>
+            <section class="modal hidden context-background" id="generate-users">
+                <div>
+                    <h3 class="mb-3">هشدار</h3>
+                    <p>توجه کنید با ادامه این بخش، کلیه کاربران، گرو‌ه‌های شغلی و ارتباط میان آن‌ها پاک شده و داده‌های جدید جای آن‌ها را خواهند گرفت.</p>
+                    <br>
+                    <p>در صورت ادامه کار لطفا لحظاتی صبر کنید تا تمام داده‌ها بدرستی بارگزاری شوند و پیغام موفقیت‌آمیزی دریافت کنید.</p>
+                </div>
+                <div class="d-flex mt-3 flex-gap">
+                    <button type="submit" class="btn btn-success w-100 p-2">ادامه</button>
+                    <button class="btn w-100 btn-danger btn-close-modal" onclick="closeModal('generate-users')">خروج</button>
+                </div>
+            </section>
+            <div class="btn btn-success w-50 p-2" onclick="openModal('generate-users')">بازسازی کاربران و گروه‌های شغلی</div>
         </div>
     </form>
+    <button class="btn text-white btn-danger rounded btn-open-modal w-100 p-2" onclick="openModal('generate-surveys')">تولید تمام پرسشنامه‌های دوره ارزشیابی کنونی</button>
 </div>
+<section class="modal hidden context-background" id="generate-surveys">
+    <div>
+        <h3 class="mb-3">هشدار</h3>
+        <p>با ادامه این بخش، تمام پرسشنامه‌های دوره ارزشیابی کنونی حذف شده و مجددا تمام پرسشنامه‌های افراد مشمول در این دوره ارزشیابی ساخته می‌شود.</p>
+    </div>
+    <div class="d-flex mt-3 flex-gap">
+        <a type="button" class="btn w-100 btn-success" href="{% url 'survey:renew' %}">ادامه</a>
+        <button type="button" class="btn w-100 btn-danger btn-close-modal" onclick="closeModal('generate-surveys')">خروج</button>
+    </div>
+</section>
 {% if status == True %}
 <div class="alert validation" style="background-color: seagreen;" role="alert">
     {{ message }}
 </div>
 {% elif status == False %}
-<div class="alert validation" style="background-color: maroon;" role="alert">
+<div class="alert validation" style="background-color: firebrick;" role="alert">
     {{ message }}
 </div>
 {% endif %}

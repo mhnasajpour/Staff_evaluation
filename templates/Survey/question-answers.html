@@ -91,20 +91,34 @@
         </div>
         {% endfor %}
     </div>
-    <div class="context-color pt-3 pb-4 mx-4 d-flex" style="gap: 2vw;">
-        <div class="user-box context-color context-background border p-2 w-25 align-self-center py-2" id="total-points" max="{{ total_points }}">
+    <div class="context-color pt-3 pb-4 mx-4 d-flex flex-gap">
+        <div class="user-box context-color context-background border p-2 w-50 align-self-center" id="total-points" max="{{ total_points }}">
             <span>امتیاز داده شده: </span>
             <span id="display-points" class="fw-bold">0</span>
         </div>
         <button type="submit" class="btn btn-success w-100 align-self-center py-2" onclick="sendSurveyResults()">ثبت ارزشیابی</button>
         {% if allow_to_skip_survey %}
-            <a class="btn btn-danger w-100 align-self-center py-2" href="{% url 'survey:skip_surveys' current_category %}">رد کردن پرسشنامه‌{% if surveys|length > 1 %}های{% endif %} {{ type_of_questions }}</a>
+            <button class="btn btn-danger w-100 align-self-center py-2" onclick="openModal('skip-survey')">رد کردن پرسشنامه‌{% if surveys|length > 1 %}های{% endif %} {{ type_of_questions }}</button>
         {% endif %}
     </div>
     <div class="pb-4 mx-4 d-flex">
         <div class="alert alert-warning text-white w-100 small fw-bold" id="alert" role="alert" hidden="True"></div>
     </div>
 </div>
+<section class="modal hidden context-background" id="skip-survey">
+    <div>
+        <h3 class="mb-3">هشدار</h3>
+        <p>آیا مایل به رد کردن پرسشنامه‌{% if surveys|length > 1 %}های{% endif %} {{ type_of_questions }} هستید؟</p>
+        <p class="text-danger mb-3">با رد کردن پرسشنامه‌{% if surveys|length > 1 %}های{% endif %} زیر دیگر نمی‌توانید به آن پاسخ دهید.</p>
+        {% for survey in surveys %}
+            <p class="px-3">{{ type_of_questions }} - {{ survey.target_position }}</p>
+        {% endfor %}
+    </div>
+    <div class="d-flex mt-3 flex-gap">
+        <a type="button" class="btn w-100 btn-success" href="{% url 'survey:skip_surveys' current_category %}">ادامه</a>
+        <button type="button" class="btn w-100 btn-danger btn-close-modal" onclick="closeModal('skip-survey')">خروج</button>
+    </div>
+</section>
 <script>
     function sendSurveyResults() {
         const points = []
@@ -126,7 +140,7 @@
             alert.innerHTML = result['message']
             alert.hidden = false
             if (result['status']) setTimeout(() => { window.location.href = window.location.href.split("?")[0] }, 3000)
-            alert.style.backgroundColor = result['status'] ? "mediumseagreen" : 'orangered'
+            alert.style.backgroundColor = result['status'] ? "mediumseagreen" : 'firebrick'
             window.scrollTo(0, document.body.scrollHeight)
         })
     }

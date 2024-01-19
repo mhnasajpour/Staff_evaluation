@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.rtl.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Vazirmatn-font-face.css' %}">
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <title>ورود</title>
 </head>
@@ -15,12 +16,12 @@
 <body class="primary-background">
     <div class="row p-0 m-0">
         <div class="col my-5 login-box secondary-background">
-            <img src="{% static 'iut.png' %}" width="25%" class="mb-2">
+            <img src="{% static 'img/iut.png' %}" width="25%" class="mb-2">
             <div class="mb-5">سامانه ارزشیابی کارکنان و کارمندان<br>دانشگاه صنعتی اصفهان</div>
             <form method="POST">
                 {% csrf_token %}
                 <div class="my-3 px-5 mx-3 d-flex">
-                    <div style="width: 7rem;">
+                    <div style="width: 7rem; align-self: center;">
                         <label>نام کاربری</label>
                     </div>
                     <div class="p-0 w-100">
@@ -28,7 +29,7 @@
                     </div>
                 </div>
                 <div class="my-3 px-5 mx-3 d-flex">
-                    <div style="width: 7rem;">
+                    <div style="width: 7rem; align-self: center;">
                         <label>کلمه عبور</label>
                     </div>
                     <div class="p-0 w-100">
@@ -41,11 +42,11 @@
             </form>
         </div>
         <div class="col logo-login-box">
-            <img src="{% static 'login.png' %}">
+            <img src="{% static 'img/login.png' %}">
         </div>
     </div>
     {% if error %}
-    <div class="alert validation" style="background-color: maroon;" role="alert">
+    <div class="alert validation" style="background-color: firebrick;" role="alert">
         نام کاربری یا کلمه عبور اشتباه است.
     </div>
     {% endif %}

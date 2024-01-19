@@ -16,6 +16,8 @@ class Home(View):
     def get(self, request):
         if not self.request.user.is_authenticated:
             return redirect('user:login')
+        if self.request.user.is_superuser:
+            return redirect('survey:management')
         category = get_user_categories(self.request.user.id)
         if category:
             return redirect('survey:question_answers', category=category.pop())
