@@ -27,33 +27,53 @@
         </div>
     </div>
 </div>
-<div class="container my-4 secondary-background rounded">
+<div class="container my-4 px-4 secondary-background rounded">
     <form method="POST">
         {% csrf_token %}
-        <div class="row p-3">
-            <div class="col">
-                <div class="context-color py-1 px-3">رمز عبور فعلی</div>
-                <div class="user-box context-color context-background border">{{ form.old_password }}</div>
+        <div class="row p-3 flex-gap">
+            <div class="col border">
+                <div class="row">
+                    <div class="col">
+                        <div class="context-color py-1 px-3">رمز عبور فعلی</div>
+                        <div class="user-box context-color context-background border">{{ form.old_password }}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="context-color py-1 px-3">رمز عبور جدید</div>
+                        <div class="user-box context-color context-background border">{{ form.new_password1 }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="context-color py-1 px-3">تکرار رمز عبور جدید</div>
+                        <div class="user-box context-color context-background border">{{ form.new_password2 }}</div>
+                    </div>
+                </div>
             </div>
-            <div class="col">
-                <div class="context-color py-1 px-3">رمز عبور جدید</div>
-                <div class="user-box context-color context-background border">{{ form.new_password1 }}</div>
-            </div>
-            <div class="col">
-                <div class="context-color py-1 px-3">تکرار رمز عبور جدید</div>
-                <div class="user-box context-color context-background border">{{ form.new_password2 }}</div>
+            <div class="col border p-3">
+                <h5 class="text-danger">الگوی رمز امن</h5>
+                <br>
+                <div>طول رمز عبور انتخاب شده نباید کمتر از 8 باشد.</div>
+                <div>تمام حروف رمز عبور انتخاب شده نباید عددی باشد.</div>
+                <div>رمز عبور انتخاب شده نباید از بین رمز عبورهای معروف باشد. (مثال: "abc123")</div>
             </div>
         </div>
-        <div class="my-3 px-3">
-            <button type="submit" class="btn btn-success w-100 mb-4">تغییر رمز عبور</button>
+        <div class="my-3">
+            <section class="modal hidden context-background" id="change-password">
+                <div>
+                    <h3 class="mb-3">هشدار</h3>
+                    <p>آیا از تغییر رمز عبور خود مطمئن هستید؟</p>
+                    <p>در صورت تغییر موفقیت آمیز رمز عبور فعلی، به صفحه ورود هدایت می‌شوید.</p>
+                </div>
+                <div class="d-flex mt-3 flex-gap">
+                    <button type="submit" class="btn w-100 btn-success">ادامه</a>
+                    <button type="button" class="btn w-100 btn-danger btn-close-modal" onclick="closeModal('change-password')">خروج</button>
+                </div>
+            </section>
+            <div class="btn btn-success w-100 mb-4" onclick="openModal('change-password')">تغییر رمز عبور</div>
         </div>
     </form>
 </div>
-{% if status == True %}
-<div class="alert validation" style="background-color: seagreen;" role="alert">
-    {{ message }}
-</div>
-{% elif status == False %}
+{% if status == False %}
 <div class="alert validation" style="background-color: firebrick;" role="alert">
     {{ message }}
 </div>

@@ -32,15 +32,23 @@ class user_logout(View):
 
 class User_edit(View):
     def get(self, request):
-        user = User.objects.get(id=self.request.user.id)
-        form = PasswordChangeForm(request.user, request.POST)
-        return render(request, 'User/edit.html', {'form': form, 'user': user})
+        if self.request.user.is_authenticated:
+            user = User.objects.get(id=self.request.user.id)
+            form = PasswordChangeForm(request.user, request.POST)
+            return render(request, 'User/edit.html', {'form': form, 'user': user})
         
     def post(self, request):
-        form = PasswordChangeForm(request.user, request.POST)
-        user = User.objects.get(id=self.request.user.id)
-        if form.is_valid():
-            form.save()
-            return redirect('user:login')
-        else:
-            return render(request, 'User/edit.html', {'form': form, 'user': user, 'status': False, 'message': form.errors})
+        if self.request.user.is_authenticated:
+            form = PasswordChangeForm(request.user, request.POST)
+            user = User.objects.get(id=self.request.user.id)
+            if form.is_valid():
+                form.save()
+                return redirect('user:login')
+            else:
+                if form.errors.get('old_password'):
+                    message = 'رمز عبور فعلی نادرست است.'
+                elif form.data.get('new_password1') != form.data.get('new_password2'):
+                    message = 'رمز عبور جدید با تکرار آن برابر نیست.'
+                elif form.errors.get('new_password2'):
+                    message = 'رمز عبور جدید مطابق با الگوی رمز امن نیست.'
+                return render(request, 'User/edit.html', {'form': form, 'user': user, 'status': False, 'message': message})
