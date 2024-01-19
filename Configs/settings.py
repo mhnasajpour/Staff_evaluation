@@ -41,8 +41,7 @@ INSTALLED_APPS = [
 
     'User.apps.UserConfig',
     'Period.apps.PeriodConfig',
-    'Question.apps.QuestionConfig',
-    'Playground.apps.PlaygroundConfig',
+    'Survey.apps.SurveyConfig',
 ]
 
 MIDDLEWARE = [

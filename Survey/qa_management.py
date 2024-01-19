@@ -1,4 +1,4 @@
-from Question.models import Survey, Question, QuestionAnswer
+from .models import Survey, Question, QuestionAnswer
 from User.models import Position
 from Period.models import Period
 from django.db.models import Sum

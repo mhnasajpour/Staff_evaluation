@@ -1,13 +1,26 @@
 .primary-background {
-    background-color: #D5F0C1;
+    background-color: #A3EBB1;
+}
+
+.header-background {
+    background-color: #116530;
 }
 
 .secondary-background {
-    background-color: #F9F7C9;
+    background-color: lavender;
 }
 
 .context-background {
-    background-color:whitesmoke;
+    background-color:lavenderblush;
+}
+
+.context-color {
+    color: #000055;
+}
+
+.user-box {
+    text-align: center;
+    border-radius: 10px;
 }
 
 .logo-login-box {
@@ -37,12 +50,6 @@
     width: 100%; 
     border-radius: 0px;
     padding: 1rem 5rem;
-}
-
-.user-box {
-    background-color: whitesmoke;
-    text-align: center;
-    border-radius: 10px;
 }
 
 .link-box {

@@ -1,15 +1,16 @@
-import json
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http.response import JsonResponse
-from django.views import View
-from django.db.models import Sum
 from .forms import ManagementForm
-from User.staff_management import clean_and_create_data
-from User.models import Position
+from .models import TYPE_CHOICES, ANSWER_CHOICES
+from .qa_management import get_user_categories, get_questions, calc_total_points, add_question_answer, is_allowed_to_skip_survey
+from .survey_management import clean_and_create_surveys
 from Period.models import Period
-from Question.models import TYPE_CHOICES, ANSWER_CHOICES
-from .question_answers_management import get_user_categories, get_questions, calc_total_points, add_question_answer, is_allowed_to_skip_survey
-from django.http.response import Http404
+from User.models import Position
+from User.staff_management import clean_and_create_data
+from django.db.models import Sum
+from django.http.response import JsonResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+import json
+
 
 class Home(View):
     def get(self, request):
@@ -17,9 +18,9 @@ class Home(View):
             return redirect('user:login')
         category = get_user_categories(self.request.user.id)
         if category:
-            return redirect('playground:question_answers', category=category.pop())
+            return redirect('survey:question_answers', category=category.pop())
         else:
-            return render(request, 'Playground/question-answers.html')
+            return render(request, 'Survey/question-answers.html')
 
 
 class Question_answers(View):
@@ -47,7 +48,7 @@ class Question_answers(View):
             'choices': list(map(lambda choice: (round(choice[0] / 3, 2), choice[0], choice[1]), ANSWER_CHOICES))[::-1],
             'allow_to_skip_survey': is_allowed_to_skip_survey(self.request.user.id, category)
         }
-        return render(request, 'Playground/question-answers.html', context=context)
+        return render(request, 'Survey/question-answers.html', context=context)
     
     def post(self, request, category):
         if not self.request.user.is_authenticated:
@@ -79,14 +80,15 @@ class Skip_surveys(View):
         if not self.request.user.is_authenticated:
             return redirect('user:login')
         is_allowed_to_skip_survey(self.request.user.id, category, do_skip=True)
-        return redirect('playground:question_answers', category=category)
+        return redirect('survey:question_answers', category=category)
+
 
 class Management(View):
     def get(self, request):
         if not (self.request.user.is_authenticated and self.request.user.is_superuser):
             raise Http404()
         form = ManagementForm()
-        return render(request, 'Playground/admin.html', {'form': form})
+        return render(request, 'survey/admin.html', {'form': form})
 
     def post(self, request):
         if not (self.request.user.is_authenticated and self.request.user.is_superuser):
@@ -95,7 +97,20 @@ class Management(View):
             form = ManagementForm()
             clean_and_create_data(request.FILES['user_file'])
         except:
-            return render(request, 'Playground/admin.html', {'form': form, 'status': False, 'message': 'بدلیل خطا، بارگزاری فایل متوقف شد. لطفا مجددا تلاش کنید.'})
-        return render(request, 'Playground/admin.html', {'form': form, 'status': True, 'message': 'داده‌ها با موفقیت بارگزاری شدند.'})
-        
-            
+            return render(request, 'Survey/admin.html', {'form': form, 'status': False, 'message': 'بدلیل خطا، بارگزاری فایل متوقف شد. لطفا مجددا تلاش کنید.'})
+        return render(request, 'Survey/admin.html', {'form': form, 'status': True, 'message': 'داده‌ها با موفقیت بارگزاری شدند.'})
+
+
+class Renew_surveys(View):
+    def get(self, request):
+        if not (self.request.user.is_authenticated and self.request.user.is_superuser):
+            raise Http404() 
+        form = ManagementForm()
+        current_period = Period.get_current_period()
+        if not current_period:
+            return render(request, 'Survey/admin.html', {'form': form, 'status': False, 'message': 'هیچ دوره زمانی ارزشیابی فعالی وجود ندارد. لطفا ابتدا دوره ارزشیابی تعریف کنید'})
+        try:
+            clean_and_create_surveys(current_period)
+            return render(request, 'Survey/admin.html', {'form': form, 'status': True, 'message': 'پرسشنامه‌ها با موفقیت ایجاد شدند.'})
+        except:
+            return render(request, 'Survey/admin.html', {'form': form, 'status': False, 'message': 'بدلیل وجود خطا، پرسشنامه‌ها ایجاد نشدند. لطفا مجددا تلاش کنید.'})

@@ -18,8 +18,8 @@ class user_login(View):
             if user:
                 login(request, user)
                 if self.request.user.is_superuser:
-                    return redirect('playground:management')
-                return redirect('playground:home')
+                    return redirect('survey:management')
+                return redirect('survey:home')
         return render(request, 'User/login.html', {'form': form, 'error': True})
 
 
