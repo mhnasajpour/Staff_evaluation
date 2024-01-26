@@ -79,7 +79,6 @@
         {% for question in questions %}
         <div class="m-4 context-background p-3 border" style="border-radius: 10px;">
             <span>{{ question.content }}</span>
-            <span class="small fw-bold">({{ question.weight }} امتیاز)</span>
             <br>
             {% for choice in choices %}
             <div class="form-check form-check-inline mt-4 mx-2">
