@@ -11,8 +11,8 @@ class Category(models.Model):
 
 
 class User(AbstractUser):
-    personnel_code = models.CharField(max_length=10, unique=True, null=True)
-    national_code = models.CharField(max_length=10, unique=True, null=True)
+    personnel_code = models.CharField(primary_key = True, max_length=10)
+    national_code = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
         return self.get_full_name()
@@ -21,12 +21,10 @@ class User(AbstractUser):
 class Position(models.Model):
     title = models.CharField(max_length=255, null=True)
     unit = models.CharField(max_length=255, null=True)
-    user = models.ForeignKey(
-        User, null=True, on_delete=models.SET_NULL, related_name='users')
-    manager = models.ForeignKey(
-        User, null=True, blank=True, on_delete=models.SET_NULL, related_name='managers')
-    category = models.ForeignKey(
-        Category, null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='users')
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='managers')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.get_full_name()

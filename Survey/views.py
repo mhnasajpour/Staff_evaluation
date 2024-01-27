@@ -1,10 +1,10 @@
 from .forms import ManagementForm
 from .models import TYPE_CHOICES, ANSWER_CHOICES
 from .qa_management import get_user_categories, get_questions, calc_total_points, add_question_answer, is_allowed_to_skip_survey
-from .survey_management import clean_and_create_surveys
+from .survey_management import update_surveys
 from Period.models import Period
 from User.models import Position
-from User.staff_management import clean_and_create_data
+from User.staff_management import update_staffs
 from django.db.models import Sum
 from django.http.response import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -18,7 +18,7 @@ class Home(View):
             return redirect('user:login')
         if self.request.user.is_superuser:
             return redirect('survey:management')
-        category = get_user_categories(self.request.user.id)
+        category = get_user_categories(self.request.user.pk)
         if category:
             return redirect('survey:question_answers', category=category.pop())
         else:
@@ -30,13 +30,13 @@ class Question_answers(View):
         if not self.request.user.is_authenticated:
             return redirect('user:login')
         current_period = Period.get_current_period()
-        categories = get_user_categories(self.request.user.id)
+        categories = get_user_categories(self.request.user.pk)
         category = category if category in categories else None
-        user_position = Position.objects.get(user_id=self.request.user.id, category__name=category) if category else None
+        user_position = Position.objects.get(user_pk=self.request.user.pk, category__name=category) if category else None
         user_surveys, questions = get_questions(current_period, user_position)
         selected_survey = user_surveys[0] if user_surveys else None
         if request.GET.get('target'):
-            selected_survey = get_object_or_404(user_surveys, id=request.GET.get('target'))
+            selected_survey = get_object_or_404(user_surveys, pk=request.GET.get('target'))
         type_of_questions = TYPE_CHOICES[int(questions.first().type)][1] if questions else None
         context = {
             'categories': categories,
@@ -48,7 +48,7 @@ class Question_answers(View):
             'questions': questions,
             'total_points': questions.aggregate(Sum('weight'))['weight__sum'],
             'choices': list(map(lambda choice: (round(choice[0] / 3, 2), choice[0], choice[1]), ANSWER_CHOICES))[::-1],
-            'allow_to_skip_survey': is_allowed_to_skip_survey(self.request.user.id, category)
+            'allow_to_skip_survey': is_allowed_to_skip_survey(self.request.user.pk, category)
         }
         return render(request, 'Survey/question-answers.html', context=context)
     
@@ -58,9 +58,9 @@ class Question_answers(View):
         try:
             info = json.loads(request.body.decode('utf-8'))
             current_period = Period.get_current_period()
-            user_position = Position.objects.get(user_id=self.request.user.id, category__name=category)
+            user_position = Position.objects.get(user_pk=self.request.user.pk, category__name=category)
             selected_surveys, questions = get_questions(period=current_period, position=user_position)
-            if int(info['survey']) not in selected_surveys.values_list('id', flat=True):
+            if int(info['survey']) not in selected_surveys.values_list('pk', flat=True):
                 return JsonResponse({"message": 'اطلاعات سربرگ پرسشنامه نادرست است. لطفا صفحه را رفرش کنید و مجددا آن را پر کنید', "status": False}) 
             if len(info['points']) != questions.count():
                 return JsonResponse({"message": 'همه سوالات پرسشنامه باید تکمیل شوند. لطفا مجددا آن را ارسال کنید.', "status": False}) 
@@ -79,7 +79,7 @@ class Skip_surveys(View):
     def get(self, request, category):
         if not self.request.user.is_authenticated:
             return redirect('user:login')
-        is_allowed_to_skip_survey(self.request.user.id, category, do_skip=True)
+        is_allowed_to_skip_survey(self.request.user.pk, category, do_skip=True)
         return redirect('survey:question_answers', category=category)
 
 
@@ -95,8 +95,9 @@ class Management(View):
             raise Http404()
         try:
             form = ManagementForm()
-            clean_and_create_data(request.FILES['user_file'])
-        except:
+            update_staffs(request.FILES['user_file'])
+        except Exception as e:
+            print(e)
             return render(request, 'Survey/admin.html', {'form': form, 'status': False, 'message': 'بدلیل خطا، بارگزاری فایل متوقف شد. لطفا مجددا تلاش کنید.'})
         return render(request, 'Survey/admin.html', {'form': form, 'status': True, 'message': 'داده‌ها با موفقیت بارگزاری شدند.'})
 
@@ -104,13 +105,13 @@ class Management(View):
 class Renew_surveys(View):
     def get(self, request):
         if not (self.request.user.is_authenticated and self.request.user.is_superuser):
-            raise Http404() 
+            raise Http404()
         form = ManagementForm()
         current_period = Period.get_current_period()
         if not current_period:
             return render(request, 'Survey/admin.html', {'form': form, 'status': False, 'message': 'هیچ دوره زمانی ارزشیابی فعالی وجود ندارد. لطفا ابتدا دوره ارزشیابی تعریف کنید'})
         try:
-            clean_and_create_surveys(current_period)
+            update_surveys(current_period)
             return render(request, 'Survey/admin.html', {'form': form, 'status': True, 'message': 'پرسشنامه‌ها با موفقیت ایجاد شدند.'})
         except:
             return render(request, 'Survey/admin.html', {'form': form, 'status': False, 'message': 'بدلیل وجود خطا، پرسشنامه‌ها ایجاد نشدند. لطفا مجددا تلاش کنید.'})

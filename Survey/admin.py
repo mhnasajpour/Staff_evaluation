@@ -1,5 +1,6 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import Survey, Question, QuestionAnswer
+from Period.models import Period
 
 
 @admin.register(Survey)
@@ -16,11 +17,19 @@ class QuestionAdmin(admin.ModelAdmin):
     search_fields = ('period', 'content')
     list_filter = ('period', 'type', 'category')
     fields = ('period', 'content', 'weight', 'type', 'category')
+    actions = ('duplicate_questions',)
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(QuestionAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['category'].required = False
         return form
+    
+    
+    @admin.action(description='Duplicate questions for current period')
+    def duplicate_questions(modeladmin, request, queryset):
+        for obj in queryset:
+            Question.objects.create(content=obj.content, period=Period.get_current_period(), weight=obj.weight, type=obj.type, category=obj.category)
+        messages.success(request, "Successfully duplicated.")
 
 @admin.register(QuestionAnswer)
 class QuestionAnswerAdmin(admin.ModelAdmin):

@@ -9,35 +9,24 @@ header = {
     'personnel_code': 'كد پرسنلي',
     'national_code': 'كد ملي',
     'manager_personnel_code': 'كد پرسنلي مدير',
-    'category_id': 'رسته',
     'category': 'عنوان رسته',
 }
 
 
-def remove_all_users():
-    User.objects.filter(is_staff=False).delete()
+def deactivate_all_positions():
+    Position.objects.all().update(is_active=False)
 
 
-def remove_all_categories():
-    Category.objects.all().delete()
+def update_categories(categories):
+    for category_name in categories:
+        Category.objects.get_or_create(name=category_name)
 
 
-def remove_all_positions():
-    Position.objects.all().delete()
-
-
-def add_categories(categories):
-    for category in categories:
-        new_category = Category()
-        new_category.name = category
-        new_category.save()
-
-
-def add_users(users):
-    national_codes = set()
+def update_users(users):
+    personnel_codes = list(User.objects.values_list('personnel_code', flat=True))
     for user in users.iterrows():
         new_user = User()
-        if user[1][header['national_code']] in national_codes:
+        if user[1][header['personnel_code']] in personnel_codes:
             continue
         new_user.set_password(str(user[1][header['national_code']]))
         new_user.username = user[1][header['personnel_code']]
@@ -45,36 +34,32 @@ def add_users(users):
         new_user.last_name = user[1][header['last_name']]
         new_user.personnel_code = user[1][header['personnel_code']]
         new_user.national_code = user[1][header['national_code']]
-        national_codes.add(user[1][header['national_code']])
+        personnel_codes.append(user[1][header['national_code']])
         new_user.save()
 
 
-def add_positions(positions):
+def update_positions(positions):
     for position in positions.iterrows():
-        new_position = Position()
-        new_position.title = position[1][header['position_title']]
-        new_position.unit = position[1][header['organizational_unit']]
-
-        user = User.objects.get(
-            personnel_code=position[1][header['personnel_code']])
-        new_position.user = user
-
+        new_position = None
         if position[1][header['manager_personnel_code']] > 0:
-            manager = User.objects.get(
-                personnel_code=position[1][header['manager_personnel_code']])
-            new_position.manager = manager
+            new_position = Position.objects.get_or_create(
+                user_id=position[1][header['personnel_code']],
+                manager_id=position[1][header['manager_personnel_code']],
+                category=Category.objects.get(name=position[1][header['category']]))
+        else:
+            new_position = Position.objects.get_or_create(
+                user_id=position[1][header['personnel_code']],
+                category=Category.objects.get(name=position[1][header['category']]))
+        new_position[0].title = position[1][header['position_title']]
+        new_position[0].unit = position[1][header['organizational_unit']]
+        new_position[0].is_active = True
+        new_position[0].save()
 
-        category = Category.objects.get(name=position[1][header['category']])
-        new_position.category = category
+        
 
-        new_position.save()
-
-
-def clean_and_create_data(file):
+def update_staffs(file):
     data = pd.read_excel(file)
-    remove_all_categories()
-    remove_all_positions()
-    remove_all_users()
-    add_categories(data[header['category']].unique())
-    add_users(data)
-    add_positions(data)
+    deactivate_all_positions()
+    update_categories(data[header['category']].unique())
+    update_users(data)
+    update_positions(data)

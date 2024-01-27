@@ -40,9 +40,9 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Position)
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ('title', 'unit', 'user', 'manager', 'category')
+    list_display = ('title', 'unit', 'user', 'manager', 'category', 'is_active')
     search_fields = ('title', 'unit', 'user', 'manager')
-    list_filter = ('category', 'unit')
+    list_filter = ('category', 'unit', 'is_active')
     fields = ('title', 'unit', 'user', 'manager', 'category')
 
     def get_form(self, request, obj=None, **kwargs):

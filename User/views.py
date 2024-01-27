@@ -33,14 +33,14 @@ class user_logout(View):
 class User_edit(View):
     def get(self, request):
         if self.request.user.is_authenticated:
-            user = User.objects.get(id=self.request.user.id)
+            user = User.objects.get(pk=self.request.user.pk)
             form = PasswordChangeForm(request.user, request.POST)
             return render(request, 'User/edit.html', {'form': form, 'user': user})
         
     def post(self, request):
         if self.request.user.is_authenticated:
             form = PasswordChangeForm(request.user, request.POST)
-            user = User.objects.get(id=self.request.user.id)
+            user = User.objects.get(pk=self.request.user.pk)
             if form.is_valid():
                 form.save()
                 return redirect('user:login')

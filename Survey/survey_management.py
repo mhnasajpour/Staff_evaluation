@@ -6,7 +6,7 @@ def remove_all_surveys(period):
     Survey.objects.all().filter(period=period).delete()
 
 
-def clean_and_create_surveys(period):
+def update_surveys(period):
     remove_all_surveys(period)
     create_self_assessment_surveys(period)
     create_manager_assessment_surveys(period)
