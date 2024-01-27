@@ -60,8 +60,6 @@ class Question_answers(View):
             current_period = Period.get_current_period()
             user_position = Position.objects.get(user_id=self.request.user.id, category__name=category)
             selected_surveys, questions = get_questions(period=current_period, position=user_position)
-            print(info['survey'])
-            print(info['points'])
             if int(info['survey']) not in selected_surveys.values_list('id', flat=True):
                 return JsonResponse({"message": 'اطلاعات سربرگ پرسشنامه نادرست است. لطفا صفحه را رفرش کنید و مجددا آن را پر کنید', "status": False}) 
             if len(info['points']) != questions.count():
