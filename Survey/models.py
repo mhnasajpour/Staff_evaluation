@@ -7,16 +7,17 @@ from django.core.exceptions import ValidationError
 TYPE_CHOICES = (
     ('0', 'خود ارزیابی'),
     ('1', 'ارزشیابی مدیر'),
-    ('2', 'ارزشیابی همکار'),
-    ('3', 'ارزشیابی هم‌رسته'),
-    ('4', 'ارزشیابی تخصصی')
+    ('2', 'ارزشیابی کارمند'),
+    ('3', 'ارزشیابی همکار'),
+    ('4', 'ارزشیابی هم‌رسته'),
+    ('5', 'ارزشیابی تخصصی'),
 )
 
 ANSWER_CHOICES = (
-    (0, 'ضعیف'),
-    (1, 'متوسط'),
-    (2, 'خوب'),
-    (3, 'بسیار خوب')
+    (1, 'ضعیف'),
+    (2, 'متوسط'),
+    (3, 'خوب'),
+    (4, 'بسیار خوب')
 )
 
 class Survey(models.Model):
@@ -29,7 +30,13 @@ class Survey(models.Model):
     def __str__(self):
         return self.target_position.user.get_full_name() + ' <- ' + self.respondent_position.user.get_full_name()
 
+
+class QuestionGroup(models.Model):
+    name = models.CharField(max_length=30)
+
+
 class Question(models.Model):
+    group = models.ForeignKey(QuestionGroup, on_delete=models.SET_NULL, null=True)
     content = models.CharField(max_length=300)
     period = models.ForeignKey(Period, on_delete=models.SET_NULL, null=True)
     weight = models.FloatField(default=1)

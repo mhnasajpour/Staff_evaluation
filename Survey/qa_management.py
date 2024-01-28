@@ -15,15 +15,18 @@ def get_questions(period, position):
     type_of_surveys = user_surveys.values_list('type', flat=True)
     period_of_questions = Question.objects.filter(period=period)
     selected_surveys, questions = user_surveys.none(), period_of_questions.none() 
-    if '2' in type_of_surveys:
-        selected_surveys = user_surveys.filter(type='2')
-        questions = period_of_questions.filter(type='2')
-    elif '3' in type_of_surveys:
+    if '3' in type_of_surveys:
         selected_surveys = user_surveys.filter(type='3')
-        questions = period_of_questions.filter(type='3') | period_of_questions.filter(category=user_surveys[0].respondent_position.category)
+        questions = period_of_questions.filter(type='3')
+    elif '4' in type_of_surveys:
+        selected_surveys = user_surveys.filter(type='4')
+        questions = period_of_questions.filter(type='4') | period_of_questions.filter(category=user_surveys[0].respondent_position.category)
     elif '0' in type_of_surveys:
         selected_surveys = user_surveys.filter(type='0')
         questions = period_of_questions.filter(type='0')
+    elif '2' in type_of_surveys:
+        selected_surveys = user_surveys.filter(type='2')
+        questions = period_of_questions.filter(type='2')
     elif '1' in type_of_surveys:
         selected_surveys = user_surveys.filter(type='1')
         questions = period_of_questions.filter(type='1')
@@ -33,7 +36,7 @@ def get_questions(period, position):
 def calc_total_points(questions, points):
     result = 0
     for index, question in enumerate(questions):
-        result += question.weight * int(points[index]) / 3
+        result += question.weight * int(points[index]) / 4
     return result / questions.aggregate(Sum('weight'))['weight__sum'] * 100
 
 
@@ -51,7 +54,7 @@ def is_allowed_to_skip_survey(user_pk, category, do_skip=False):
         return False
     sample_survey = not_answered_survey.first()
     answered_survey = Survey.objects.filter(period=sample_survey.period, respondent_position=sample_survey.respondent_position, type=sample_survey.type, is_done=True)
-    if (sample_survey.type == '0') or (sample_survey.type in ['2', '3'] and answered_survey):
+    if (sample_survey.type == '0') or (sample_survey.type in ['3', '4'] and answered_survey):
         if do_skip:
             not_answered_survey.update(is_done=True)
         return True

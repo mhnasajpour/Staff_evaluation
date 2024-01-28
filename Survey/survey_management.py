@@ -1,6 +1,18 @@
+import pandas as pd
 import random
+from Period.models import Period
 from User.models import Position
-from .models import Survey
+from .models import Survey, QuestionGroup, Question
+
+
+header = {
+    'group': 'گروه',
+    'content': 'سوال',
+    'weight': 'وزن',
+    'type': 'نوع',
+    'category': 'رسته'
+}
+
 
 def remove_all_surveys(period):
     Survey.objects.all().filter(period=period).delete()
@@ -27,7 +39,8 @@ def create_manager_assessment_surveys(period):
     for position in positions:
         manager_positions = Position.objects.filter(is_active=True, user=position.manager)
         if manager_positions:
-            Survey.objects.create(period=period, target_position=position, respondent_position=manager_positions[0], type='1')
+            Survey.objects.create(period=period, target_position=position, respondent_position=manager_positions[0], type='2')
+            Survey.objects.create(period=period, target_position=manager_positions[0], respondent_position=position, type='1')
 
 
 def create_colleague_assessment_surveys(period):
@@ -37,7 +50,7 @@ def create_colleague_assessment_surveys(period):
         colleagues = Position.objects.exclude(user=position.user).filter(is_active=True, manager=position.manager, category=position.category)
         random_colleagues = random.sample(list(colleagues), k=3 if colleagues.count() > 3 else colleagues.count())
         for target_position in random_colleagues:
-            Survey.objects.create(period=period, target_position=target_position, respondent_position=position, type='2')
+            Survey.objects.create(period=period, target_position=target_position, respondent_position=position, type='3')
 
 
 def create_same_category_assessment_surveys(period):
@@ -47,4 +60,28 @@ def create_same_category_assessment_surveys(period):
         same_category = Position.objects.exclude(user=position.user).filter(is_active=True, category=position.category)
         random_same_category = random.sample(list(same_category), k=3 if same_category.count() > 3 else same_category.count())
         for target_position in random_same_category:
-            Survey.objects.create(period=period, target_position=target_position, respondent_position=position, type='3')
+            Survey.objects.create(period=period, target_position=target_position, respondent_position=position, type='4')
+
+
+def remove_current_period_questions():
+    Question.objects.filter(period=Period.get_current_period()).delete()
+
+
+def create_current_period_questions(questions):
+    for question in questions.iterrows():
+        new_question = Question()
+        new_question.group = QuestionGroup.objects.get_or_create(name=question[1][header['group']])[0]
+        new_question.content = question[1][header['content']]
+        new_question.period = Period.get_current_period()
+        if question[1][header['weight']]:
+            new_question.weight = question[1][header['weight']]
+        new_question.type = question[1][header['type']]
+        if question[1][header['category']]:
+            new_question.category = question[1][header['category']]
+        new_question.save()
+
+
+def create_questions(file):
+    data = pd.read_excel(file)
+    remove_current_period_questions()
+    create_current_period_questions(data)

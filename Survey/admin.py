@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from .models import Survey, Question, QuestionAnswer
+from .models import Survey, QuestionGroup, Question, QuestionAnswer
 from Period.models import Period
 
 
@@ -10,13 +10,18 @@ class SurveyAdmin(admin.ModelAdmin):
     list_filter = ('period', 'type', 'is_done')
     fields = ('period', 'type', 'is_done', 'respondent_position', 'target_position')
 
+@admin.register(QuestionGroup)
+class QuestionGroupAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    fields = ('name',)
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('period', 'content', 'weight', 'type', 'category')
+    list_display = ('period', 'content', 'weight', 'group', 'type', 'category')
     search_fields = ('period', 'content')
-    list_filter = ('period', 'type', 'category')
-    fields = ('period', 'content', 'weight', 'type', 'category')
+    list_filter = ('period', 'group', 'type', 'category')
+    fields = ('period', 'group', 'content', 'weight', 'type', 'category')
     actions = ('duplicate_questions',)
 
     def get_form(self, request, obj=None, **kwargs):
