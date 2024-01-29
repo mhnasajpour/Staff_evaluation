@@ -1,8 +1,8 @@
 import pandas as pd
 import random
 from Period.models import Period
-from User.models import Position
-from .models import Survey, QuestionGroup, Question
+from User.models import Category, Position
+from .models import TYPE_CHOICES, Survey, QuestionGroup, Question
 
 
 header = {
@@ -73,11 +73,11 @@ def create_current_period_questions(questions):
         new_question.group = QuestionGroup.objects.get_or_create(name=question[1][header['group']])[0]
         new_question.content = question[1][header['content']]
         new_question.period = Period.get_current_period()
-        if question[1][header['weight']]:
+        if str(question[1][header['weight']]) != 'nan':
             new_question.weight = question[1][header['weight']]
-        new_question.type = question[1][header['type']]
-        if question[1][header['category']]:
-            new_question.category = question[1][header['category']]
+        new_question.type = list(map(lambda obj: obj[1], TYPE_CHOICES)).index(question[1][header['type']])
+        if str(question[1][header['category']]) != 'nan':
+            new_question.category = Category.objects.get_or_create(name=question[1][header['category']])[0]
         new_question.save()
 
 

@@ -7,6 +7,7 @@ function selectUser() {
 }
 
 function calcTotalPoints() {
+    debugger
     let total_points = 0
     const maxPoint = document.getElementById("total-points").getAttribute("max")
     const displayElement = document.getElementById("display-points")

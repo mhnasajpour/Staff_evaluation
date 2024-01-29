@@ -17,7 +17,7 @@
     </div>
 </div>
 <div class="container my-5 p-5 secondary-background rounded">
-    <form method="POST" enctype='multipart/form-data' class="mb-5">
+    <form method="POST" action="{% url 'survey:management' %}?type=users" enctype='multipart/form-data' class="mb-5">
         {% csrf_token %}
         <div class="d-flex flex-gap">
             <div class="w-100">
@@ -28,7 +28,7 @@
                     <h3 class="mb-3">هشدار</h3>
                     <p>توجه کنید با ادامه این بخش، تمام کاربران پیشین غیرفعال می‌شوند و کاربران جدید به جای آن‌ها قرار خواهند گرفت.</p>
                     <br>
-                    <p>در صورت ادامه کار لطفا لحظاتی صبر کنید تا تمام داده‌ها بدرستی بارگزاری شوند و پیغام موفقیت‌آمیزی دریافت کنید.</p>
+                    <p>در صورت ادامه کار لطفا لحظاتی صبر کنید تا تمام داده‌ها بدرستی بارگذاری شوند و پیغام موفقیت‌آمیزی دریافت کنید.</p>
                 </div>
                 <div class="d-flex mt-3 flex-gap">
                     <button type="submit" class="btn btn-success w-100 p-2">ادامه</button>
@@ -38,25 +38,25 @@
             <div class="btn btn-success w-50 p-2" onclick="openModal('generate-users')">بازسازی کاربران و گروه‌های شغلی</div>
         </div>
     </form>
-    <form method="POST" enctype='multipart/form-data' class="mb-5">
+    <form method="POST" action="{% url 'survey:management' %}?type=questions" enctype='multipart/form-data' class="mb-5">
         {% csrf_token %}
         <div class="d-flex flex-gap">
             <div class="w-100">
                 {{ question_form.question_file }}
             </div>
-            <section class="modal hidden context-background" id="generate-users">
+            <section class="modal hidden context-background" id="generate-questions">
                 <div>
                     <h3 class="mb-3">هشدار</h3>
-                    <p>توجه کنید با ادامه این بخش، تمام کاربران پیشین غیرفعال می‌شوند و کاربران جدید به جای آن‌ها قرار خواهند گرفت.</p>
+                    <p>توجه کنید با ادامه این بخش، تمام سوالات دوره ارزشیابی کنونی حذف می‌شوند و سوالات جدید به جای آن‌ها قرار خواهند گرفت.</p>
                     <br>
-                    <p>در صورت ادامه کار لطفا لحظاتی صبر کنید تا تمام داده‌ها بدرستی بارگزاری شوند و پیغام موفقیت‌آمیزی دریافت کنید.</p>
+                    <p>در صورت ادامه کار لطفا لحظاتی صبر کنید تا تمام داده‌ها بدرستی بارگذاری شوند و پیغام موفقیت‌آمیزی دریافت کنید.</p>
                 </div>
                 <div class="d-flex mt-3 flex-gap">
                     <button type="submit" class="btn btn-success w-100 p-2">ادامه</button>
-                    <button class="btn w-100 btn-danger btn-close-modal" onclick="closeModal('generate-users')">خروج</button>
+                    <button class="btn w-100 btn-danger btn-close-modal" onclick="closeModal('generate-questions')">خروج</button>
                 </div>
             </section>
-            <div class="btn btn-success w-50 p-2" onclick="openModal('generate-users')">بازسازی کاربران و گروه‌های شغلی</div>
+            <div class="btn btn-success w-50 p-2" onclick="openModal('generate-questions')">بارگذاری سوالات دوره زمانی کنونی</div>
         </div>
     </form>
     <button class="btn text-white btn-danger rounded btn-open-modal w-100 p-2" onclick="openModal('generate-surveys')">تولید تمام پرسشنامه‌های دوره ارزشیابی کنونی</button>

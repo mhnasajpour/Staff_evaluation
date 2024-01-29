@@ -32,7 +32,7 @@ class Question_answers(View):
         current_period = Period.get_current_period()
         categories = get_user_categories(self.request.user.pk)
         category = category if category in categories else None
-        user_position = Position.objects.get(user_pk=self.request.user.pk, category__name=category) if category else None
+        user_position = Position.objects.get(user_id=self.request.user.pk, category__name=category) if category else None
         user_surveys, questions = get_questions(current_period, user_position)
         selected_survey = user_surveys[0] if user_surveys else None
         if request.GET.get('target'):
@@ -47,7 +47,7 @@ class Question_answers(View):
             'first_survey': selected_survey,
             'questions': questions,
             'total_points': questions.aggregate(Sum('weight'))['weight__sum'],
-            'choices': list(map(lambda choice: (choice[0] / 4, 2, choice[0], choice[1]), ANSWER_CHOICES))[::-1],
+            'choices': list(map(lambda choice: (choice[0] / 4, choice[0], choice[1]), ANSWER_CHOICES))[::-1],
             'allow_to_skip_survey': is_allowed_to_skip_survey(self.request.user.pk, category)
         }
         return render(request, 'Survey/question-answers.html', context=context)
@@ -58,7 +58,7 @@ class Question_answers(View):
         try:
             info = json.loads(request.body.decode('utf-8'))
             current_period = Period.get_current_period()
-            user_position = Position.objects.get(user_pk=self.request.user.pk, category__name=category)
+            user_position = Position.objects.get(user_id=self.request.user.pk, category__name=category)
             selected_surveys, questions = get_questions(period=current_period, position=user_position)
             if int(info['survey']) not in selected_surveys.values_list('pk', flat=True):
                 return JsonResponse({"message": 'اطلاعات سربرگ پرسشنامه نادرست است. لطفا صفحه را رفرش کنید و مجددا آن را پر کنید', "status": False}) 
@@ -71,7 +71,8 @@ class Question_answers(View):
                 return JsonResponse({"message": 'مجموع نمرات ثبت شده نباید بیشتر از 90 باشد.', "status": False})
             add_question_answer(info['survey'], questions, info['points'])
             return JsonResponse({"message": 'پرسشنامه با موفقیت ثبت شد.', "status": True})
-        except:
+        except Exception as e:
+            print(e)
             return JsonResponse({'message': 'بدلیل وجود خطا، پرسشنامه ثبت نشد. لطفا مجددا آن‌ را ارسال کنید.', 'status': False})
 
 
@@ -81,27 +82,6 @@ class Skip_surveys(View):
             return redirect('user:login')
         is_allowed_to_skip_survey(self.request.user.pk, category, do_skip=True)
         return redirect('survey:question_answers', category=category)
-
-
-class Management(View):
-    def get(self, request):
-        if not (self.request.user.is_authenticated and self.request.user.is_superuser):
-            raise Http404()
-        return render(request, 'survey/admin.html', {'user_form': User_form(), 'question_form': Question_form()})
-
-    def post(self, request):
-        if not (self.request.user.is_authenticated and self.request.user.is_superuser):
-            raise Http404()
-        try:
-            if request.FILES['user_file']:
-                update_staffs(request.FILES['user_file'])
-            if request.FILES['question_file']:
-                create_questions(request.FILES['question_file'])
-        except Exception as e:
-            print(e)
-            return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': False, 'message': 'بدلیل خطا، بارگزاری فایل متوقف شد. لطفا مجددا تلاش کنید.'})
-        return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': True, 'message': 'داده‌ها با موفقیت بارگزاری شدند.'})
-
 
 class Renew_surveys(View):
     def get(self, request):
@@ -115,3 +95,22 @@ class Renew_surveys(View):
             return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': True, 'message': 'پرسشنامه‌ها با موفقیت ایجاد شدند.'})
         except:
             return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': False, 'message': 'بدلیل وجود خطا، پرسشنامه‌ها ایجاد نشدند. لطفا مجددا تلاش کنید.'})
+
+class Management(View):
+    def get(self, request):
+        if not (self.request.user.is_authenticated and self.request.user.is_superuser):
+            raise Http404()
+        return render(request, 'survey/admin.html', {'user_form': User_form(), 'question_form': Question_form()})
+
+    def post(self, request):
+        if not (self.request.user.is_authenticated and self.request.user.is_superuser):
+            raise Http404()
+        try:
+            if request.GET.get('type') == 'users' and request.FILES['user_file']:
+                update_staffs(request.FILES['user_file'])
+            if request.GET.get('type') == 'questions' and request.FILES['question_file']:
+                create_questions(request.FILES['question_file'])
+        except Exception as e:
+            print(e)
+            return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': False, 'message': 'بدلیل خطا، بارگذاری فایل متوقف شد. لطفا مجددا تلاش کنید.'})
+        return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': True, 'message': 'داده‌ها با موفقیت بارگذاری شدند.'})

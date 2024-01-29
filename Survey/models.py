@@ -34,6 +34,9 @@ class Survey(models.Model):
 class QuestionGroup(models.Model):
     name = models.CharField(max_length=30)
 
+    def __str__(self):
+        return self.name
+
 
 class Question(models.Model):
     group = models.ForeignKey(QuestionGroup, on_delete=models.SET_NULL, null=True)
@@ -44,13 +47,14 @@ class Question(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return self.content
+        MAX_LENGTH = 50
+        return '... ' + self.content[:MAX_LENGTH] if len(self.content) > MAX_LENGTH else self.content
 
     def clean(self):
-        if self.type != '4' and self.category:
+        if self.type != '5' and self.category:
             raise ValidationError(
                 f'تایپ سوال "{TYPE_CHOICES[int(self.type)][1]}"، نیازی به گروه شغلی ندارد')
-        if self.type == '4' and self.category not in self.period.categories.all():
+        if self.type == '5' and self.category not in self.period.categories.all():
             raise ValidationError(
                 f'دوره زمانی "{self.period}"، شامل گروه "{self.category}" نمی‌باشد')
         return super().clean()

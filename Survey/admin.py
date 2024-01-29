@@ -18,7 +18,7 @@ class QuestionGroupAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('period', 'content', 'weight', 'group', 'type', 'category')
+    list_display = ('period', 'group', 'type', 'category', 'weight', 'content')
     search_fields = ('period', 'content')
     list_filter = ('period', 'group', 'type', 'category')
     fields = ('period', 'group', 'content', 'weight', 'type', 'category')
