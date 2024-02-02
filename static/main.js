@@ -6,6 +6,17 @@ function selectUser() {
     window.location.href = `?target=${document.getElementById("select-user").value}`
 }
 
+function selectReport() {
+    const period = document.getElementById("select-period").value
+    const category = document.getElementById("select-category").value
+    const type = document.getElementById("select-type").value
+    let result = '?'
+    if (period) result += 'period=' + period + '&'
+    if (category) result += 'category=' + category + '&'
+    if (type) result += 'type=' + type + '&'
+    window.location.href = result
+}
+
 function calcTotalPoints() {
     debugger
     let total_points = 0

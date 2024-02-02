@@ -8,4 +8,5 @@ urlpatterns = [
     path('category/<str:category>', views.Question_answers.as_view(), name='question_answers'),
     path('survey/skip/<str:category>', views.Skip_surveys.as_view(), name='skip_surveys'),
     path('survey/renew/', views.Renew_surveys.as_view(), name='renew'),
+    path('report/', views.Report.as_view(), name='report'),
 ]

@@ -1,5 +1,5 @@
 from .forms import User_form, Question_form
-from .models import TYPE_CHOICES, ANSWER_CHOICES
+from .models import TYPE_CHOICES, ANSWER_CHOICES, Survey
 from .qa_management import get_user_categories, get_questions, calc_total_points, add_question_answer, is_allowed_to_skip_survey
 from .survey_management import update_surveys, create_questions
 from Period.models import Period
@@ -10,6 +10,7 @@ from django.http.response import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 import json
+from datetime import date
 
 
 class Home(View):
@@ -100,7 +101,7 @@ class Management(View):
     def get(self, request):
         if not (self.request.user.is_authenticated and self.request.user.is_superuser):
             raise Http404()
-        return render(request, 'survey/admin.html', {'user_form': User_form(), 'question_form': Question_form()})
+        return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form()})
 
     def post(self, request):
         if not (self.request.user.is_authenticated and self.request.user.is_superuser):
@@ -114,3 +115,22 @@ class Management(View):
             print(e)
             return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': False, 'message': 'بدلیل خطا، بارگذاری فایل متوقف شد. لطفا مجددا تلاش کنید.'})
         return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': True, 'message': 'داده‌ها با موفقیت بارگذاری شدند.'})
+    
+
+class Report(View):
+    def get(self, request):
+        if not self.request.user.is_authenticated:
+            return redirect('user:login')
+        categories = Position.objects.filter(user_id=request.user.pk, category__isnull=False).values_list('category__name', flat=True)
+        periods = Period.objects.exclude(end_date__lt=date.today()).order_by('-end_date')
+        types = [obj[1] for obj in TYPE_CHOICES][:-1]
+        print(types)
+        context = {
+            'current_category': request.GET.get('category'),
+            'current_period': request.GET.get('period'),
+            'current_type': request.GET.get('type'),
+            'categories': categories,
+            'periods': periods,
+            'types': types
+        }
+        return render(request, 'Survey/reports.html', context=context)
