@@ -26,15 +26,16 @@ def update_users(users):
     personnel_codes = list(User.objects.values_list('personnel_code', flat=True))
     for user in users.iterrows():
         new_user = User()
-        if user[1][header['personnel_code']] in personnel_codes:
+        personnel_code = str(user[1][header['personnel_code']])
+        if personnel_code in personnel_codes:
             continue
         new_user.set_password(str(user[1][header['national_code']]))
-        new_user.username = user[1][header['personnel_code']]
+        new_user.username = personnel_code
         new_user.first_name = user[1][header['first_name']]
         new_user.last_name = user[1][header['last_name']]
-        new_user.personnel_code = user[1][header['personnel_code']]
+        new_user.personnel_code = personnel_code
         new_user.national_code = user[1][header['national_code']]
-        personnel_codes.append(user[1][header['national_code']])
+        personnel_codes.append(personnel_code)
         new_user.save()
 
 
