@@ -119,13 +119,13 @@ class Management(View):
         return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': True, 'message': 'داده‌ها با موفقیت بارگذاری شدند.'})
     
 
-class Report(View):
+class Recent_answers(View):
     def get(self, request):
         if not self.request.user.is_authenticated:
             return redirect('user:login')
         
         categories = Position.objects.filter(user_id=request.user.pk, category__isnull=False).values_list('category__name', flat=True)
-        periods = Period.objects.exclude(end_date__lt=date.today()).order_by('-end_date')
+        periods = Period.objects.order_by('-end_date')
         types = TYPE_CHOICES[:-1]
 
         current_category = request.GET.get('category') or categories[0]
@@ -147,5 +147,27 @@ class Report(View):
             'periods': periods,
             'types': types,
             'users': users
+        }
+        return render(request, 'Survey/recent_answers.html', context=context)
+    
+class Report(View):
+    def get(self, request):
+        if not self.request.user.is_authenticated:
+            return redirect('user:login')
+        report_type = ['گزارش بر اساس معیارها', 'گزارش بر اساس سطح ارزیابی', 'گزارش جزئی']
+        current_report_type = request.GET.get('report') or report_type[0]
+        
+        categories = Position.objects.filter(user_id=request.user.pk, category__isnull=False).values_list('category__name', flat=True)
+        periods = Period.objects.exclude(end_date__gt=date.today()).order_by('-end_date')
+        types = TYPE_CHOICES[:-1]
+        context = {
+            'current_report_type': current_report_type,
+            'current_category': request.GET.get('category'),
+            'current_period': request.GET.get('period'),
+            'current_type': request.GET.get('type'),
+            'report_types': report_type,
+            'categories': categories,
+            'periods': periods,
+            'types': types,
         }
         return render(request, 'Survey/reports.html', context=context)

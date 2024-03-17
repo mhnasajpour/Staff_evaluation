@@ -6,7 +6,7 @@ function selectUser() {
     window.location.href = `?target=${document.getElementById("select-user").value}`
 }
 
-function selectReport() {
+function selectAnswers() {
     const period = document.getElementById("select-period").value
     const category = document.getElementById("select-category").value
     const type = document.getElementById("select-type").value
@@ -16,6 +16,19 @@ function selectReport() {
     if (category) result += 'category=' + category + '&'
     if (type) result += 'type=' + type + '&'
     if (user) result += 'user=' + user + '&'
+    window.location.href = result
+}
+
+function selectReport() {
+    const report = document.getElementById("select-report-type").value
+    const period = document.getElementById("select-period").value
+    const category = document.getElementById("select-category").value
+    const type = document.getElementById("select-type").value
+    let result = '?'
+    result += 'report=' + report + '&'
+    if (period) result += 'period=' + period + '&'
+    if (category) result += 'category=' + category + '&'
+    if (type) result += 'type=' + type + '&'
     window.location.href = result
 }
 
