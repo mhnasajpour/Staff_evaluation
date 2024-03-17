@@ -84,6 +84,7 @@ class Skip_surveys(View):
         is_allowed_to_skip_survey(self.request.user.pk, category, do_skip=True)
         return redirect('survey:question_answers', category=category)
 
+
 class Renew_surveys(View):
     def get(self, request):
         if not (self.request.user.is_authenticated and self.request.user.is_superuser):
@@ -96,6 +97,7 @@ class Renew_surveys(View):
             return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': True, 'message': 'پرسشنامه‌ها با موفقیت ایجاد شدند.'})
         except:
             return render(request, 'Survey/admin.html', {'user_form': User_form(), 'question_form': Question_form(), 'status': False, 'message': 'بدلیل وجود خطا، پرسشنامه‌ها ایجاد نشدند. لطفا مجددا تلاش کنید.'})
+
 
 class Management(View):
     def get(self, request):
@@ -121,16 +123,29 @@ class Report(View):
     def get(self, request):
         if not self.request.user.is_authenticated:
             return redirect('user:login')
+        
         categories = Position.objects.filter(user_id=request.user.pk, category__isnull=False).values_list('category__name', flat=True)
         periods = Period.objects.exclude(end_date__lt=date.today()).order_by('-end_date')
-        types = [obj[1] for obj in TYPE_CHOICES][:-1]
-        print(types)
+        types = TYPE_CHOICES[:-1]
+
+        current_category = request.GET.get('category') or categories[0]
+        my_position = Position.objects.get(user_id=request.user, category__name=current_category)
+        current_period = Period.objects.get(name=request.GET.get('period')) if request.GET.get('period') else periods[0]
+        current_type = request.GET.get('type') or types[0][0]
+
+        users = Survey.objects.filter(period=current_period, respondent_position=my_position, type=current_type, is_done=True)
+        current_user = users.first()
+        if request.GET.get('user') and int(request.GET.get('user')) in users.values_list('target_position_id', flat=True): 
+            current_user = users.get(target_position_id=request.GET.get('user'))
+        
         context = {
-            'current_category': request.GET.get('category'),
-            'current_period': request.GET.get('period'),
-            'current_type': request.GET.get('type'),
+            'current_category': current_category,
+            'current_period': current_period,
+            'current_type': current_type,
+            'current_user': current_user,
             'categories': categories,
             'periods': periods,
-            'types': types
+            'types': types,
+            'users': users
         }
         return render(request, 'Survey/reports.html', context=context)

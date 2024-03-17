@@ -10,10 +10,12 @@ function selectReport() {
     const period = document.getElementById("select-period").value
     const category = document.getElementById("select-category").value
     const type = document.getElementById("select-type").value
+    const user = document.getElementById("select-user").value
     let result = '?'
     if (period) result += 'period=' + period + '&'
     if (category) result += 'category=' + category + '&'
     if (type) result += 'type=' + type + '&'
+    if (user) result += 'user=' + user + '&'
     window.location.href = result
 }
 

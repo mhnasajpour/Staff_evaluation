@@ -12,9 +12,6 @@
                 {% endif %}
             </div>
             <select id="select-category" onchange="selectReport()" class="context-color form-control user-box context-color context-background">
-                {% if current_category == None %}
-                <option value="-1">انتخاب کنید</option>
-                {% endif %}
                 {% for category in categories %}
                 {% if category == current_category %}
                 <option selected>{{ category }}</option>
@@ -32,9 +29,6 @@
                 {% endif %}
             </div>
             <select id="select-period" onchange="selectReport()" class="context-color form-control user-box context-color context-background">
-                {% if current_period == None %}
-                <option value="-1">انتخاب کنید</option>
-                {% endif %}
                 {% for period in periods %}
                 {% if period == current_period %}
                 <option selected>{{ period }}</option>
@@ -52,17 +46,43 @@
                 {% endif %}
             </div>
             <select id="select-type" onchange="selectReport()" class="context-color form-control user-box context-color context-background">
-                {% if current_type == None %}
-                <option value="-1">انتخاب کنید</option>
-                {% endif %}
                 {% for type in types %}
-                {% if type == current_type %}
-                <option selected>{{ type }}</option>
+                {% if type.0 == current_type.0 %}
+                <option value="{{type.0}}" selected>{{ type.1 }}</option>
                 {% else %}
-                <option>{{ type }}</option>
+                <option value="{{type.0}}">{{ type.1 }}</option>
                 {% endif %}
                 {% endfor %}
             </select>
+        </div>
+    </div>
+</div>
+<div class="container my-4 secondary-background rounded">
+    <div class="row p-3 ">
+        <div class="col">
+            <div class="py-1 px-3">
+                <span class="context-color">فرد موردنظر</span>
+                {% if users|length > 1 %}
+                <span class="text-danger small fw-bold">(انتخاب کنید)</span>
+                {% endif %}
+            </div>
+            <select id="select-user" onchange="selectReport()" class="context-color form-control user-box context-color context-background">
+                {% for user in users %}
+                {% if user == current_user %}
+                <option selected value="{{ user.target_position.id }}">{{ user.target_position }}</option>
+                {% else %}
+                <option value="{{ user.target_position.id }}">{{ user.target_position }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <div class="context-color py-1 px-3">واحد سازمان</div>
+            <div class="user-box context-color context-background border p-2">{% if current_user.target_position.unit %}{{ current_user.target_position.unit }}{% else %}---{% endif %}</div>
+        </div>
+        <div class="col">
+            <div class="context-color py-1 px-3">مسئولیت</div>
+            <div class="user-box context-color context-background border p-2">{% if current_user.target_position.title %}{{ current_user.target_position.title }}{% else %}---{% endif %}</div>
         </div>
     </div>
 </div>
