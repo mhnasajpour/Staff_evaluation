@@ -22,13 +22,12 @@ def update_surveys(period):
     remove_all_surveys(period)
     create_self_assessment_surveys(period)
     create_manager_assessment_surveys(period)
-    create_colleague_assessment_surveys(period)
-    create_same_category_assessment_surveys(period)
+    create_colleague_and_same_category_assessment_surveys(period)
 
 
 def create_self_assessment_surveys(period):
     allowed_categories = period.categories.values_list('name', flat=True)
-    positions = Position.objects.filter(is_active=True, category__is_root=False, category__name__in=allowed_categories)
+    positions = Position.objects.filter(is_active=True, category__name__in=allowed_categories)
     for position in positions:
         Survey.objects.create(period=period, target_position=position, respondent_position=position, type='0')
 
@@ -43,22 +42,17 @@ def create_manager_assessment_surveys(period):
             Survey.objects.create(period=period, target_position=manager_positions[0], respondent_position=position, type='1')
 
 
-def create_colleague_assessment_surveys(period):
-    allowed_categories = period.categories.values_list('name', flat=True)
-    positions = Position.objects.filter(is_active=True, category__is_root=False, category__name__in=allowed_categories)
-    for position in positions:
-        colleagues = Position.objects.exclude(user=position.user).filter(is_active=True, manager=position.manager, category=position.category)
-        random_colleagues = random.sample(list(colleagues), k=3 if colleagues.count() > 3 else colleagues.count())
-        for target_position in random_colleagues:
-            Survey.objects.create(period=period, target_position=target_position, respondent_position=position, type='3')
-
-
-def create_same_category_assessment_surveys(period):
+def create_colleague_and_same_category_assessment_surveys(period):
     allowed_categories = period.categories.values_list('name', flat=True)
     positions = Position.objects.filter(is_active=True, category__is_root=False, category__name__in=allowed_categories)
     for position in positions:
         same_category = Position.objects.exclude(user=position.user).filter(is_active=True, category=position.category)
+        colleagues = same_category.filter(manager=position.manager)
+        random_colleagues = random.sample(list(colleagues), k=3 if colleagues.count() > 3 else colleagues.count())
+        same_category = same_category.exclude(id__in=[colleague.id for colleague in random_colleagues])
         random_same_category = random.sample(list(same_category), k=3 if same_category.count() > 3 else same_category.count())
+        for target_position in random_colleagues:
+            Survey.objects.create(period=period, target_position=target_position, respondent_position=position, type='3')
         for target_position in random_same_category:
             Survey.objects.create(period=period, target_position=target_position, respondent_position=position, type='4')
 
