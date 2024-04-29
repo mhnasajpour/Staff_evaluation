@@ -33,7 +33,7 @@ class QuestionAdmin(admin.ModelAdmin):
     @admin.action(description='Duplicate questions for current period')
     def duplicate_questions(modeladmin, request, queryset):
         for obj in queryset:
-            Question.objects.create(content=obj.content, period=Period.get_current_period(), weight=obj.weight, type=obj.type, category=obj.category)
+            Question.objects.create(group=obj.group, content=obj.content, period=Period.get_current_period(), weight=obj.weight, type=obj.type, category=obj.category)
         messages.success(request, "Successfully duplicated.")
 
 @admin.register(QuestionAnswer)
