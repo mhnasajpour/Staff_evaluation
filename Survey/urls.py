@@ -7,7 +7,5 @@ urlpatterns = [
     path('management/', views.Management.as_view(), name='management'),
     path('category/<str:category>', views.Question_answers.as_view(), name='question_answers'),
     path('survey/skip/<str:category>', views.Skip_surveys.as_view(), name='skip_surveys'),
-    path('survey/renew/', views.Renew_surveys.as_view(), name='renew'),
-    path('answers/', views.Recent_answers.as_view(), name='answers'),
-    path('report/', views.Report.as_view(), name='report'),
+    path('survey/renew/', views.Renew_surveys.as_view(), name='renew')
 ]
